@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Currency;
 import java.util.UUID;
 
 /**
@@ -30,6 +31,18 @@ public class Product {
     @Expose
     private Number price;
 
+    public Currency getPrice_currency() {
+        return price_currency;
+    }
+
+    public void setPrice_currency(Currency price_currency) {
+        this.price_currency = price_currency;
+    }
+
+    @SerializedName("price_currency")
+    @Expose(serialize = false)
+    private Currency price_currency;
+
     @SerializedName("unit_price")
     @Expose
     private String unitPrice;
@@ -49,8 +62,7 @@ public class Product {
 
     @SerializedName("active")
     @Expose
-    private boolean active;
-    private boolean isSelected = false;
+    private boolean active = true;
 
     public String getUnitPrice() {
         return unitPrice;
@@ -67,27 +79,6 @@ public class Product {
     public void setActive(Boolean active) {
         this.active = active;
     }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-
-//    public Product() {
-//
-//    }
-
-//    public Product(UUID id, String name, String description, Number price, String image) {
-//        this.id = id;
-//        this.name = name;
-//        this.description = description;
-//        this.price = price;
-//        this.image = image;
-//    }
-
 
     public UUID getId() {
         return id;
@@ -122,6 +113,14 @@ public class Product {
     public Product setPrice(Number price) {
         this.price = price;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
     public String getImage() {

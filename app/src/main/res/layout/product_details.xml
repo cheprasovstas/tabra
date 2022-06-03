@@ -20,31 +20,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                          android:orientation="vertical">
+                          android:orientation="vertical" android:paddingLeft="16dp" android:paddingRight="16dp">
                 <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:clickable="true" app:srcCompat="@drawable/ic_camera_black_24dp"
+                            android:id="@+id/floatingActionButtonAddPictire"
+                            android:layout_alignBottom="@id/product_image_details"
+                            android:layout_alignRight="@id/product_image_details" android:layout_marginRight="16dp"
+                            android:layout_marginBottom="16dp"/>
                     <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/product_image_details" android:contentDescription="@string/todo"
-                            android:minHeight="182dp" android:scaleType="fitCenter" tools:ignore="ImageContrastCheck"/>
+                            android:minHeight="182dp" android:scaleType="fitCenter" tools:ignore="ImageContrastCheck"
+                    />
 
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/product_name_details"
-                            android:layout_below="@id/product_image_details" app:boxBackgroundColor="@color/white">
+                            android:layout_height="wrap_content"
+                            android:id="@+id/product_name_details"
+                            android:layout_below="@id/product_image_details"
+                            app:boxBackgroundColor="@color/white"
+                            android:layout_marginTop="32dp"
+                            android:baselineAligned="false" android:layout_centerInParent="false"
+                    >
 
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="@string/product_name_hint" android:inputType="text" android:maxLines="1"/>
+                                android:hint="@string/product_name_hint" android:inputType="text" android:maxLines="1"
+                                android:singleLine="false"
+                                android:paddingStart="0dp" android:paddingEnd="0dp"/>
                     </com.google.android.material.textfield.TextInputLayout>
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_name_details"
-                            android:id="@+id/product_price_details" app:boxBackgroundColor="@color/white">
+                            android:id="@+id/product_price_details" app:boxBackgroundColor="@color/white"
+                            android:layout_marginTop="32dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
@@ -55,7 +72,8 @@
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_price_details"
-                            android:id="@+id/product_unit_price_details" app:boxBackgroundColor="@color/white">
+                            android:id="@+id/product_unit_price_details" app:boxBackgroundColor="@color/white"
+                            android:layout_marginTop="32dp">
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -65,7 +83,8 @@
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_unit_price_details"
-                            android:id="@+id/product_description_details" app:boxBackgroundColor="@color/white">
+                            android:id="@+id/product_description_details" app:boxBackgroundColor="@color/white"
+                            android:layout_marginTop="32dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"

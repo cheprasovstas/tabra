@@ -1,6 +1,12 @@
 <resources>
-    <style name="Widget.Theme.Tabra.ButtonBar.Fullscreen" parent="">
-        <item name="android:background">@color/black_overlay</item>
-        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+
+    <!--Floating label text style-->
+    <style name="MyHintText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:textColor">@color/purple_200</item>
+    </style>
+    <!--Input field style-->
+    <style name="MyEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
     </style>
 </resources>

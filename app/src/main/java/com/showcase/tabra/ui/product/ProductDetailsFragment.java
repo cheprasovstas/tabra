@@ -12,11 +12,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -31,12 +29,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.showcase.tabra.BuildConfig;
 import com.showcase.tabra.R;
-import com.showcase.tabra.databinding.ActivityProfileBinding;
-import com.showcase.tabra.databinding.FragmentSettingsBinding;
-import com.showcase.tabra.databinding.FragmentSlideshowBinding;
 import com.showcase.tabra.databinding.ProductDetailsBinding;
 import com.showcase.tabra.utils.PictureUtils;
 import com.squareup.picasso.Picasso;
@@ -60,6 +56,7 @@ public class ProductDetailsFragment extends Fragment {
     private ProductDetailsBinding binding;
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 101;
+    private FloatingActionButton fab;
     //VIEWS
 
     @Override
@@ -78,6 +75,16 @@ public class ProductDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = ProductDetailsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        fab = binding.floatingActionButtonAddPictire;
+        fab.bringToFront();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(checkAndRequestPermissions(getActivity())){
+                    chooseImage(getContext());
+                }
+            }
+        });
 
         this.nameTxt = binding.productNameDetails;
         this.priceTxt = binding.productPriceDetails;
@@ -350,13 +357,19 @@ public class ProductDetailsFragment extends Fragment {
                         // There are no request codes
                         Intent data = result.getData();
                         Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-
-                        imageView.setImageBitmap(bitmap);
-                        newImage = bitmap;
+                        setNewImage(bitmap);
                     }
                 }
             });
 
+    private void setNewImage(Bitmap bitmap) {
+        newImage = bitmap;
+
+        Picasso.get().load(PictureUtils.getImage(PictureUtils.resizeBitmap(bitmap, 400, 400), getContext().getCacheDir()))
+                .fit()
+                .centerCrop()
+                .into(imageView);
+    }
 
     ActivityResultLauncher<Intent> pickPhotoActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -374,8 +387,7 @@ public class ProductDetailsFragment extends Fragment {
                             e.printStackTrace();
                         }
                         Bitmap bitmap = BitmapFactory.decodeStream(is);
-                        imageView.setImageBitmap(bitmap);
-                        newImage = bitmap;
+                        setNewImage(bitmap);
                     }
                 }
             }
