@@ -7,12 +7,18 @@
           android:title="@string/action_product_list_add_title"
           app:showAsAction="ifRoom"
           android:icon="@android:drawable/ic_menu_add"/>
+    <item
+            android:id="@+id/action_item_count"
+            app:showAsAction="always" android:title="TODO"/>
+    <item android:title="@string/action_product_list_hide_title"
+          android:id="@+id/action_product_list_hide"
+          app:showAsAction="always" android:icon="@drawable/hide"/>
+    <item android:title="@string/action_product_list_show_title"
+          android:id="@+id/action_product_list_show"
+          app:showAsAction="always" android:icon="@drawable/show"/>
     <item android:title="@string/action_product_list_share_title"
           android:id="@+id/action_product_list_share"
           android:icon="@android:drawable/ic_menu_share"
           app:showAsAction="always"/>
-    <item
-            android:id="@+id/action_item_count"
-            app:showAsAction="always" android:title="TODO"/>
 </menu>
 

@@ -3,7 +3,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:background="@drawable/item_background"
         android:orientation="horizontal"
         android:clickable="true"
         android:layout_width="match_parent"
@@ -41,9 +40,19 @@
                    android:layout_marginTop="8dp"/>
            <ImageView
                    android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" app:srcCompat="?android:attr/textCheckMark"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/activeImageView"
+                   android:layout_marginRight="16dp" android:layout_centerInParent="false" android:visibility="visible"
+                   app:srcCompat="@android:drawable/presence_offline"
+                   android:layout_alignParentEnd="false"
+                   android:layout_alignEnd="@id/productImage" android:layout_alignBottom="@id/productImage"/>
+           <ImageView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
                    android:id="@+id/selectedImageView"
                    android:layout_alignParentEnd="true"
-                   android:layout_marginRight="16dp" android:layout_centerInParent="true" android:visibility="gone"/>
+                   android:layout_marginRight="16dp"
+                   android:src="@drawable/product_selector"
+                   android:visibility="visible" android:layout_centerInParent="true"/>
        </RelativeLayout>
 </LinearLayout>

@@ -22,7 +22,7 @@ public class ProductKeyProvider  extends ItemKeyProvider<String> {
     @Nullable
     @Override
     public String getKey(int position) {
-        return adapter.getItem(position).getId().toString();
+            return adapter.getItem(position).getId().toString();
     }
 
     @Override

@@ -3,12 +3,9 @@
 
     <item android:title="@string/action_product_details_save_title" android:id="@+id/action_product_details_save"
           app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_product_details_add_image"
-          android:title="@string/action_product_details_take_picture_title"
-          android:icon="@android:drawable/ic_menu_camera" app:showAsAction="never" android:visible="false"/>
     <item android:id="@+id/action_product_details_delete"
           android:title="@string/action_product_details_delete"
           android:icon="@android:drawable/ic_delete" app:showAsAction="withText"/>
     <item android:title="@string/action_product_details_share" android:id="@+id/action_product_details_share"
-          android:icon="@android:drawable/ic_menu_share" app:showAsAction="ifRoom"/>
+          android:icon="@android:drawable/ic_menu_share" app:showAsAction="ifRoom" android:visible="false"/>
 </menu>

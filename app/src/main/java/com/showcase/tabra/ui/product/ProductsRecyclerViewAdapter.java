@@ -6,6 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.selection.ItemDetailsLookup;
 import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +23,18 @@ import java.util.List;
 
 
 public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ProductListHolder> {
+    public boolean isSelectionMode() {
+        return isSelectionMode;
+    }
+
+    public void setSelectionMode(boolean selectionMode) {
+        if (isSelectionMode!=selectionMode) {
+            isSelectionMode = selectionMode;
+            notifyDataSetChanged();
+        }
+    }
+
+    private boolean isSelectionMode = false;
 
     public List<Product> getProductList() {
         return this.productList;
@@ -64,7 +80,6 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
         }
     }
 
-
     // total number of rows
     @Override
     public int getItemCount() {
@@ -84,22 +99,17 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
 
     public void updateProduct(Product product) {
         if (product == null) return; // we cannot update the value because it is null
-
-        for (Product item : this.productList) {
-            // search by id
-            if (item.getId().equals(product.getId())) {
-                int position = this.productList.indexOf(item);
-                this.productList.set(position, product);
-                notifyItemChanged(position);
-                break;
-            }
+        int position = getPosition(product);
+        if (position!=-1) {
+            notifyItemChanged(position);
         }
     }
 
     public void removeProduct(Product product) {
         int position = this.productList.indexOf(product);
         this.productList.remove(position);
-        notifyItemRemoved(position);
+        notifyDataSetChanged();
+//        notifyItemRemoved(position);
     }
 
     public void setTracker(SelectionTracker<String> tracker) {
@@ -107,12 +117,11 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
     }
 
 
-
     // stores and recycles views as they are scrolled off screen
     public class ProductListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView productNameTextView;
         TextView productPriceTextView;
-        ImageView productImageView, selectedImageView;
+        ImageView productImageView, selectedImageView, activeImageView;
 
         ProductListHolder(View itemView) {
             super(itemView);
@@ -120,19 +129,22 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
             productPriceTextView = itemView.findViewById(R.id.productPrice);
             productImageView = itemView.findViewById(R.id.productImage);
             selectedImageView = itemView.findViewById(R.id.selectedImageView);
+            activeImageView = itemView.findViewById(R.id.activeImageView);
             itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View view) {
             if (mProductClickListener != null) {
                 mProductClickListener.onProductClick(view, getBindingAdapterPosition());
+                selectedImageView.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
+
             }
         }
 
         public void bind(Product product, boolean isSelected) {
             bind(product);
-            itemView.setActivated(isSelected);
-            //this.selectedImageView.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+            selectedImageView.setActivated(isSelected);
+//            selectedImageView.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
         }
 
@@ -146,7 +158,8 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
                     .placeholder(R.drawable.product_list_placeholder)
                     //               .error(R.drawable.user_placeholder_error)
                     .into(this.productImageView);
-
+            activeImageView.setVisibility(!product.isActive() ? View.VISIBLE : View.GONE);
+            selectedImageView.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
         }
 
         public ItemDetailsLookup.ItemDetails<String> getItemDetails() {
@@ -160,13 +173,29 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
         return productList.get(id);
     }
 
-    public int getPosition(String key) {
-        for (Product p : productList) {
-            if (p.getId().toString().equals(key)) {
-                return productList.indexOf(p);
-            }
+
+    public int getPosition(Product product) {
+        if (product!=null){
+            return productList.indexOf(product);
         }
         return -1;
+    }
+
+    public int getPosition(String key) {
+        Product product = getProduct(key);
+        if (product!=null){
+            return getPosition(product);
+        }
+        return -1;
+    }
+
+    public Product getProduct(String key) {
+        for (Product p : productList) {
+            if (p.getId().toString().equals(key)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     // allows clicks events to be caught

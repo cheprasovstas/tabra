@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -112,19 +113,12 @@ public class ProductDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        Toolbar toolbar = view.findViewById(R.id.product_details_toolbar);
-
+        Toolbar toolbar = (Toolbar) binding.tToolbar.getRoot();
         toolbar.inflateMenu(R.menu.product_details_menu);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
-                if (id == R.id.action_product_details_add_image) {
-                    if(checkAndRequestPermissions(getActivity())){
-                        chooseImage(getContext());
-                    }
-                }
                 if (id == R.id.action_product_details_save) {
                     Product product = viewModel.getProduct().getValue();
 
@@ -162,6 +156,15 @@ public class ProductDetailsFragment extends Fragment {
                 return false;
            }
         });
+
+        ImageButton cancelButton = binding.tToolbar.toolbarCancelButton;
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+            }
+        });
+
 
         viewModel.getProductFormState().observe(getViewLifecycleOwner(), new Observer<ProductFormState>() {
             @Override
@@ -330,13 +333,11 @@ public class ProductDetailsFragment extends Fragment {
                     // Open the camera and get the photo
                     Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     takePictureActivityResultLauncher.launch(takePicture);
-//                    startActivityForResult(takePicture, 0);
                 }
                 else if(optionsMenu[i].equals("Choose from Gallery")){
                     // choose from  external storage
                     Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     pickPhotoActivityResultLauncher.launch(pickPhoto);
-//                    startActivityForResult(pickPhoto , 1);
                 }
                 else if (optionsMenu[i].equals("Exit")) {
                     dialogInterface.dismiss();

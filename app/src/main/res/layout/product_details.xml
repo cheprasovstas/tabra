@@ -6,12 +6,20 @@
                 android:background="@android:color/white"
                 android:clickable="true" android:focusable="true">
 
+    <!--Toolbar-->
+
     <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:theme="?attr/actionBarTheme"
-            android:minHeight="?attr/actionBarSize" android:id="@+id/product_details_toolbar" app:title="Product"/>
+            android:minHeight="?attr/actionBarSize" android:id="@+id/product_details_toolbar" app:title="Product"
+            android:gravity="right"/>
+    <include
+            android:id="@+id/tToolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            layout="@layout/product_details_toolbar" android:gravity="left"/>
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:layout_below="@id/product_details_toolbar"
@@ -55,8 +63,14 @@
                                 android:layout_height="wrap_content"
                                 android:hint="@string/product_name_hint" android:inputType="text" android:maxLines="1"
                                 android:singleLine="false"
-                                android:paddingStart="0dp" android:paddingEnd="0dp"/>
+                        />
                     </com.google.android.material.textfield.TextInputLayout>
+                    <Switch
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:id="@+id/product_active_details"
+                            android:layout_below="@id/product_image_details" android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="false" android:layout_alignParentLeft="false"
+                            android:layout_alignParentRight="false"/>
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_name_details"
@@ -91,11 +105,6 @@
                                 android:layout_height="wrap_content"
                                 android:hint="@string/product_description_hint"/>
                     </com.google.android.material.textfield.TextInputLayout>
-                    <Switch
-                            android:text="Switch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/product_active_details"
-                            android:layout_below="@id/product_description_details"/>
                 </RelativeLayout>
             </LinearLayout>
         </ScrollView>

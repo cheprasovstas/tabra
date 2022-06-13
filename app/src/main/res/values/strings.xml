@@ -10,7 +10,7 @@
     <string name="action_product_details_save_title">Save</string>
     <string name="action_product_details_take_picture_title">Take</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
+    <string name="prompt_phone">Phone</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
@@ -35,6 +35,13 @@
     <string name="product_unit_price_hint">Unit price</string>
     <string name="action_product_list_toolbar_title">My products</string>
     <string name="action_product_list_empty_title">На вашей витрине пока еще нет товаров</string>
+    <string name="login_activity_label">Tabrara</string>
+    <string name="share_message_price">Цена</string>
+    <string name="share_message_product_link">Заказать:</string>
+    <string name="action_product_details_cancel_title">Отмена</string>
+    <string name="action_product_list_hide_title">Скрыть</string>
+    <string name="action_product_list_show_title">Показать</string>
+    <string name="share_message_products_link">Каталог</string>
 
 
 </resources>
