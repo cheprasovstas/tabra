@@ -5,25 +5,14 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/white"
                 android:clickable="true" android:focusable="true">
-
-    <!--Toolbar-->
-
-    <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
-            android:minHeight="?attr/actionBarSize" android:id="@+id/product_details_toolbar" app:title="Product"
-            android:gravity="right"/>
     <include
-            android:id="@+id/tToolbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            layout="@layout/product_details_toolbar" android:gravity="left"/>
+            android:id="@+id/toolbar_product_details"
+            layout="@layout/toolbar_product_details"
+            android:visibility="gone" />
+
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_below="@id/product_details_toolbar"
-    >
+            android:layout_height="wrap_content">
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -61,7 +50,9 @@
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="@string/product_name_hint" android:inputType="text" android:maxLines="1"
+                                android:hint="@string/product_name_hint" android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
                                 android:singleLine="false"
                         />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -81,6 +72,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/product_price_hint" android:inputType="numberDecimal"
+                                android:maxLength="13"
                                 android:maxLines="1"/>
                     </com.google.android.material.textfield.TextInputLayout>
                     <com.google.android.material.textfield.TextInputLayout
@@ -92,6 +84,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/product_unit_price_hint"
+                                android:maxLength="20"
                                 android:maxLines="1"/>
                     </com.google.android.material.textfield.TextInputLayout>
                     <com.google.android.material.textfield.TextInputLayout
@@ -103,6 +96,7 @@
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:maxLength="4000"
                                 android:hint="@string/product_description_hint"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </RelativeLayout>

@@ -23,12 +23,4 @@
 
     </style>
 
-
-    <style name="Theme.Tabra.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-    <style name="Theme.Tabra.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="Theme.Tabra.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
-
 </resources>

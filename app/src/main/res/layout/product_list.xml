@@ -6,13 +6,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".ui.product.ProductListActivity">
+        tools:context=".ui.product.ProductListFragment">
+
+    <include
+            android:id="@+id/toolbar_product_list"
+            layout="@layout/toolbar_product_list"
+            android:visibility="visible" />
+
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             android:id="@+id/rec"
-            tools:context=".ui.product.ProductListActivity">
+            tools:context=".ui.product.ProductListFragment"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_product_list">
 
         <include android:layout_width="match_parent"
                  android:layout_height="match_parent"
@@ -20,19 +27,10 @@
                  android:id="@+id/products_empty_view"
                  android:visibility="visible"
                  android:layout_centerInParent="true"/>
-        <androidx.appcompat.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:theme="?attr/actionBarTheme"
-                android:minHeight="?attr/actionBarSize" android:id="@+id/product_list_toolbar"
-                app:title="@string/action_product_list_toolbar_title"/>
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/product_view"
-                android:layout_below="@id/product_list_toolbar">
-
+                android:layout_height="match_parent" android:id="@+id/product_view">
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                     android:id="@+id/refresh_products"
                     android:layout_width="match_parent"

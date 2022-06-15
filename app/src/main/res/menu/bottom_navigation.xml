@@ -2,19 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
       tools:showIn="navigation_view">
-
     <group android:checkableBehavior="single">
         <item
-                android:id="@+id/nav_transform"
-                android:icon="@drawable/ic_camera_black_24dp"
-                android:title="@string/menu_transform"/>
+                android:id="@+id/nav_products"
+                android:icon="@drawable/ic_menu_products"
+                android:title="@string/menu_products"/>
         <item
-                android:id="@+id/nav_reflow"
+                android:id="@+id/nav_orders"
                 android:icon="@drawable/ic_gallery_black_24dp"
-                android:title="@string/menu_reflow"/>
+                android:title="@string/menu_orders" android:visible="false"/>
         <item
-                android:id="@+id/nav_slideshow"
-                android:icon="@drawable/ic_slideshow_black_24dp"
-                android:title="@string/menu_slideshow"/>
+                android:id="@+id/nav_profile"
+                android:icon="@drawable/ic_menu_profile"
+                android:title="@string/menu_profile"/>
     </group>
 </menu>

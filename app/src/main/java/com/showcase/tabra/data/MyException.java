@@ -1,5 +1,7 @@
 package com.showcase.tabra.data;
 
+import com.showcase.tabra.R;
+
 public class MyException extends Throwable {
 
     private int error;
@@ -15,5 +17,9 @@ public class MyException extends Throwable {
 
     public static class LoginFailed401ReasonException extends MyException {
 
+
+        public LoginFailed401ReasonException() {
+            setMessage(R.string.login_failed);
+        }
     }
 }

@@ -35,6 +35,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.showcase.tabra.BuildConfig;
 import com.showcase.tabra.R;
 import com.showcase.tabra.databinding.ProductDetailsBinding;
+import com.showcase.tabra.ui.login.LoginViewModel;
+import com.showcase.tabra.ui.login.LoginViewModelFactory;
 import com.showcase.tabra.utils.PictureUtils;
 import com.squareup.picasso.Picasso;
 import org.jetbrains.annotations.NotNull;
@@ -63,57 +65,18 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Create viewModel
-        viewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
-
         // Inflate the layout for this fragment
         binding = ProductDetailsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        fab = binding.floatingActionButtonAddPictire;
-        fab.bringToFront();
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(checkAndRequestPermissions(getActivity())){
-                    chooseImage(getContext());
-                }
-            }
-        });
 
-        this.nameTxt = binding.productNameDetails;
-        this.priceTxt = binding.productPriceDetails;
-        this.descriptionTxt = binding.productDescriptionDetails;
-        this.imageView = binding.productImageDetails;
-        this.unitPrice = binding.productUnitPriceDetails;
-        this.active = binding.productActiveDetails;
-
-        //View model
-        viewModel.getProduct().observe(getViewLifecycleOwner(), new Observer<Product>() {
-            @Override
-            public void onChanged(Product product) {
-                if (product!= null) {
-                    setProduct(product);
-                    viewModel.productDataChanged(nameTxt.getEditText().getText().toString());
-                }
-            }
-        });
-
-        return root;
-    }
-
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        Toolbar toolbar = (Toolbar) binding.tToolbar.getRoot();
+        // Create Toolbar
+        Toolbar toolbar = binding.toolbarProductDetails.productDetailsToolbar;
         toolbar.inflateMenu(R.menu.product_details_menu);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -154,25 +117,19 @@ public class ProductDetailsFragment extends Fragment {
                 }
 
                 return false;
-           }
-        });
-
-        ImageButton cancelButton = binding.tToolbar.toolbarCancelButton;
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().onBackPressed();
             }
         });
 
-
+        // Create viewModel
+        viewModel = new ViewModelProvider(this, new ProductViewModelFactory(getActivity().getApplication()))
+                .get(ProductViewModel.class);
         viewModel.getProductFormState().observe(getViewLifecycleOwner(), new Observer<ProductFormState>() {
             @Override
             public void onChanged(@Nullable ProductFormState productFormState) {
                 if (productFormState == null) {
                     return;
                 }
-                toolbar.getMenu().findItem(R.id.action_product_details_save).setEnabled(productFormState.isDataValid());
+//                toolbar.getMenu().findItem(R.id.action_product_details_save).setEnabled(productFormState.isDataValid());
 //                if (loginFormState.getUsernameError() != null) {
 //                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
 //                }
@@ -181,6 +138,44 @@ public class ProductDetailsFragment extends Fragment {
 //                }
             }
         });
+
+
+        fab = binding.floatingActionButtonAddPictire;
+        fab.bringToFront();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(checkAndRequestPermissions(getActivity())){
+                    chooseImage(getContext());
+                }
+            }
+        });
+
+        this.nameTxt = binding.productNameDetails;
+        this.priceTxt = binding.productPriceDetails;
+        this.descriptionTxt = binding.productDescriptionDetails;
+        this.imageView = binding.productImageDetails;
+        this.unitPrice = binding.productUnitPriceDetails;
+        this.active = binding.productActiveDetails;
+
+        //View model
+        viewModel.getProduct().observe(getViewLifecycleOwner(), new Observer<Product>() {
+            @Override
+            public void onChanged(Product product) {
+                if (product!= null) {
+                    setProduct(product);
+                    viewModel.productDataChanged(nameTxt.getEditText().getText().toString());
+                }
+            }
+        });
+
+        //        ImageButton cancelButton = binding.tToolbar.toolbarCancelButton;
+//        cancelButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                getActivity().onBackPressed();
+//            }
+//        });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -212,6 +207,7 @@ public class ProductDetailsFragment extends Fragment {
 //        });
 
 
+        return root;
     }
 
 

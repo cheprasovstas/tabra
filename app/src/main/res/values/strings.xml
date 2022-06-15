@@ -19,18 +19,15 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <!-- TODO: Remove or change this placeholder text -->
+
     <string name="action_product_details_delete">Удалить</string>
     <string name="action_product_details_share">Поделиться</string>
     <string name="action_product_list_share_title">Поделиться</string>
-    <string name="title_activity_profile">ProfileActivity</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
 
-    <string name="menu_transform">Transform</string>
-    <string name="menu_reflow">Reflow</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_products">Products</string>
+    <string name="menu_orders">Orders</string>
+    <string name="menu_profile">Profile</string>
+
 
     <string name="product_unit_price_hint">Unit price</string>
     <string name="action_product_list_toolbar_title">My products</string>

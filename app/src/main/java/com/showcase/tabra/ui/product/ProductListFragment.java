@@ -11,15 +11,16 @@ import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.selection.*;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +35,7 @@ import com.showcase.tabra.databinding.ProductListBinding;
 import com.showcase.tabra.ui.login.LoginActivity;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,7 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class ProductListActivity extends AppCompatActivity implements ProductsRecyclerViewAdapter.onProductClickListener {
+public class ProductListFragment extends Fragment implements ProductsRecyclerViewAdapter.onProductClickListener {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProductsRecyclerViewAdapter adapter;
@@ -51,7 +53,7 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
 
     private SelectionTracker selectionTracker = null;
     private ProductListBinding binding;
-    
+
     private ViewGroup productView;
     private ViewGroup productEmptyView;
     private ActionMode actionMode;
@@ -63,10 +65,61 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+//        return super.onCreateView(inflater, container, savedInstanceState);
+        // Inflate the layout for this fragment
         binding = ProductListBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        View root = binding.getRoot();
+
+        // Create Toolbar
+        Toolbar toolbar = binding.toolbarProductList.productListToolbar;
+        toolbar.inflateMenu(R.menu.product_list_menu);
+        Menu menu = toolbar.getMenu();
+        selectedItemCount = menu.findItem(R.id.action_item_count);
+        selectedItemCount.setVisible(false);
+        action_product_list_show = menu.findItem(R.id.action_product_list_show);
+        action_product_list_show.setVisible(false);
+        action_product_list_hide = menu.findItem(R.id.action_product_list_hide);
+        action_product_list_hide.setVisible(false);
+        action_product_list_add = menu.findItem(R.id.action_product_list_add);
+        action_product_list_add.setVisible(true);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId()==R.id.action_product_list_add) {
+                    addProduct();
+                }
+                if (item.getItemId()==R.id.action_product_list_share) {
+                    if (selectionTracker.hasSelection()) {
+                        shareSelectedProducts(selectionTracker.getSelection());
+                    } else {
+                        shareAllProducts();
+                    }
+                }
+                if (item.getItemId()==R.id.action_item_count) {
+                    selectionTracker.clearSelection();
+                }
+                if (item.getItemId()==R.id.action_product_list_show) {
+                    if (selectionTracker.hasSelection()) {
+                        showSelectedProducts(selectionTracker.getSelection());
+                    }
+                    selectionTracker.clearSelection();
+                }
+                if (item.getItemId()==R.id.action_product_list_hide) {
+                    if (selectionTracker.hasSelection()) {
+                        hideSelectedProducts(selectionTracker.getSelection());
+                    }
+                    selectionTracker.clearSelection();
+                }
+                return true;
+            }
+        });
+
 
         productView = binding.productView;
         productEmptyView = binding.productsEmptyView.getRoot();
@@ -80,18 +133,13 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
             }
         });
 
-        //Create Toolbar
-        Toolbar toolbar = binding.productListToolbar;
-        setSupportActionBar(toolbar);
-
         //Getting reference of swipeRefreshLayout and recyclerView
         swipeRefreshLayout = binding.refreshProducts;
         recyclerView = binding.products;
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //Create adapter
-        adapter = new ProductsRecyclerViewAdapter(this);
+        adapter = new ProductsRecyclerViewAdapter(getActivity());
         adapter.setClickListener(this);
         adapter.registerAdapterDataObserver(new RVEmptyObserver(productView, productEmptyView, adapter));
         recyclerView.setAdapter(adapter);
@@ -135,12 +183,13 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
             public void onSelectionChanged() {
                 super.onSelectionChanged();
                 if (selectionTracker.hasSelection() && actionMode == null) {
-                    actionMode = startSupportActionMode(new ActionModeController(getApplicationContext(), selectionTracker));
+
+//                    actionMode = startSupportActionMode(new ActionModeController(getApplicationContext(), selectionTracker));
                     setMenuItemTitle(selectionTracker.getSelection().size());
 
-                } else if (!selectionTracker.hasSelection() && actionMode != null) {
-                    actionMode.finish();
-                    actionMode = null;
+//                } else if (!selectionTracker.hasSelection() && actionMode != null) {
+//                    actionMode.finish();
+//                    actionMode = null;
                 } else {
                     setMenuItemTitle(selectionTracker.getSelection().size());
 
@@ -161,15 +210,17 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
 
 
         // Create viewModel
-        viewModel = new ViewModelProvider(this, new ProductViewModelFactory(getApplication()))
+        viewModel = new ViewModelProvider(this, new ProductViewModelFactory(getActivity().getApplication()))
                 .get(ProductViewModel.class);
-        viewModel.getProductListLiveData().observe(this, new Observer<Result<List<Product>>>() {
+        viewModel.getProductListLiveData().observe(getActivity(), new Observer<Result<List<Product>>>() {
             @Override
             public void onChanged(Result<List<Product>> productsResult) {
                 if (productsResult instanceof Result.Error) {
                     if (((Result.Error) productsResult).getError() instanceof MyException.LoginFailed401ReasonException) {
                         login();
                     }
+                    login();
+                    showSearchFailed(((Result.Error) productsResult).getError().getError());
                 }
                 if (productsResult instanceof Result.Success) {
                     adapter.setProducts(((Result.Success<List<Product>>) productsResult).getData());
@@ -177,7 +228,7 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
             }
         });
 
-        viewModel.getNewProductLiveData().observe(this, new Observer<Result<Product>>() {
+        viewModel.getNewProductLiveData().observe(getActivity(), new Observer<Result<Product>>() {
             @Override
             public void onChanged(Result<Product> result) {
                 if (result instanceof Result.Error) {
@@ -191,7 +242,7 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
                 }
             }
         });
-        viewModel.getEditedProductLiveData().observe(this, new Observer<Result<Product>>() {
+        viewModel.getEditedProductLiveData().observe(getActivity(), new Observer<Result<Product>>() {
             @Override
             public void onChanged(Result<Product> result) {
                 if (result instanceof Result.Error) {
@@ -214,78 +265,16 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
             }
         });
 
-        getSupportFragmentManager().setFragmentResultListener("add_product", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                // We use a String here, but any type that can be put in a Bundle is supported
-//                adapter.addProduct(viewModel.getProduct().getValue());
-            }
-        });
-        getSupportFragmentManager().setFragmentResultListener("edit_product", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                // We use a String here, but any type that can be put in a Bundle is supported
-//                String id = bundle.getString("id", "");
-//                adapter.updateProduct(viewModel.getProduct().getValue());
-            }
-        });
-        getSupportFragmentManager().setFragmentResultListener("delete_product", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                adapter.removeProduct(viewModel.getProduct().getValue());
-            }
-        });
+        return root;
     }
+
+
 
     private void login() {
-        startActivity(new Intent(this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-        finish();
+        startActivity(new Intent(getActivity(), LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//        finish();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.product_list_menu, menu);
-        selectedItemCount = menu.findItem(R.id.action_item_count);
-        selectedItemCount.setVisible(false);
-        action_product_list_show = menu.findItem(R.id.action_product_list_show);
-        action_product_list_show.setVisible(false);
-        action_product_list_hide = menu.findItem(R.id.action_product_list_hide);
-        action_product_list_hide.setVisible(false);
-        action_product_list_add = menu.findItem(R.id.action_product_list_add);
-        action_product_list_add.setVisible(true);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId()==R.id.action_product_list_add) {
-            addProduct();
-        }
-        if (item.getItemId()==R.id.action_product_list_share) {
-            if (selectionTracker.hasSelection()) {
-                shareSelectedProducts(selectionTracker.getSelection());
-            } else {
-                shareAllProducts();
-            }
-        }
-        if (item.getItemId()==R.id.action_item_count) {
-            selectionTracker.clearSelection();
-        }
-        if (item.getItemId()==R.id.action_product_list_show) {
-            if (selectionTracker.hasSelection()) {
-                showSelectedProducts(selectionTracker.getSelection());
-            }
-            selectionTracker.clearSelection();
-        }
-        if (item.getItemId()==R.id.action_product_list_hide) {
-            if (selectionTracker.hasSelection()) {
-                hideSelectedProducts(selectionTracker.getSelection());
-            }
-            selectionTracker.clearSelection();
-        }
-        return true;
-    }
 
     private void hideSelectedProducts(Selection selection) {
         Iterator<String> itemIterable = selection.iterator();
@@ -345,11 +334,11 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
     private void shareProducts(ArrayList<Uri> files) {
         Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         Intent chooser = Intent.createChooser(intent, "Share Image");
-        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
+        List<ResolveInfo> resInfoList = getActivity().getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
         for (ResolveInfo resolveInfo : resInfoList) {
             String packageName = resolveInfo.activityInfo.packageName;
             for (Uri uri : files) {
-                grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                getActivity().grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
         }
 
@@ -380,11 +369,11 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
                 i.setType("image/*");
 
                 Intent chooser = Intent.createChooser(i, "Share Image");
-                List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
+                List<ResolveInfo> resInfoList = getActivity().getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
 
                 for (ResolveInfo resolveInfo : resInfoList) {
                     String packageName = resolveInfo.activityInfo.packageName;
-                    grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    getActivity().grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
 
                 startActivity(chooser);
@@ -403,11 +392,11 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
         try {
-            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".jpg");
+            File file =  new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".jpg");
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.close();
-             bmpUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", file);
+             bmpUri = FileProvider.getUriForFile(getActivity().getApplicationContext(), getActivity().getApplicationContext().getPackageName() + ".provider", file);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -437,15 +426,14 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
     private void addProduct() {
         viewModel.setProduct(new Product());
 
-        Toast.makeText(this, "Add new product", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Add new product", Toast.LENGTH_SHORT).show();
         // Create new fragment and transaction
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.rec, ProductDetailsFragment.class, null)
                 .setReorderingAllowed(true)
                 .addToBackStack(null)
                 .commit();
-
     }
 
     @Override
@@ -458,8 +446,8 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
 //        adapter.notifyItemChanged(position);
 
         //If Edit Item
-        Toast.makeText(this, "Edit product", Toast.LENGTH_SHORT).show();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        Toast.makeText(getActivity(), "Edit product", Toast.LENGTH_SHORT).show();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.rec, ProductDetailsFragment.class, null)
                 .setReorderingAllowed(true)
@@ -467,6 +455,9 @@ public class ProductListActivity extends AppCompatActivity implements ProductsRe
                 .commit();
     }
 
+    private void showSearchFailed(@StringRes Integer errorString) {
+        Toast.makeText(getActivity().getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
 
 
 }
