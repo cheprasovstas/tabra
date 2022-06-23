@@ -1,33 +1,25 @@
-package com.showcase.tabra;
+package com.showcase.tabra.ui;
 
-import android.content.Intent;
-import android.view.MenuItem;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-import com.showcase.tabra.databinding.ActivityMainEmptyBinding;
-import com.showcase.tabra.ui.login.LoginActivity;
-import com.showcase.tabra.ui.product.ProductListFragment;
-import com.showcase.tabra.utils.Util;
-import org.jetbrains.annotations.NotNull;
+import com.showcase.tabra.R;
+import com.showcase.tabra.databinding.ActivityMainBinding;
 
 
-public class MainEmptyActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainEmptyBinding binding;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainEmptyBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         BottomNavigationView navView = binding.navView;

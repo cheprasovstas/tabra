@@ -21,7 +21,7 @@
             android:theme="@style/Theme.Tabra"
             android:usesCleartextTraffic="true">
         <activity
-                android:name=".MainEmptyActivity"
+                android:name=".ui.LauncherActivity"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -30,9 +30,12 @@
             </intent-filter>
         </activity>
         <activity
+                android:name=".ui.MainActivity"
+                android:exported="true"/>
+        <activity
                 android:name=".ui.login.LoginActivity"
                 android:exported="true"
-                android:label="@string/title_activity_login"/> <!-- make sure within the application tag, otherwise app will crash with XmlResourceParser errors -->
+                android:label="@string/activity_login_title"/> <!-- make sure within the application tag, otherwise app will crash with XmlResourceParser errors -->
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="${applicationId}.provider"

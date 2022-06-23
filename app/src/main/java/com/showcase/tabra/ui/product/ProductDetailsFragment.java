@@ -35,9 +35,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.showcase.tabra.BuildConfig;
 import com.showcase.tabra.R;
 import com.showcase.tabra.databinding.ProductDetailsBinding;
-import com.showcase.tabra.ui.login.LoginViewModel;
-import com.showcase.tabra.ui.login.LoginViewModelFactory;
 import com.showcase.tabra.utils.PictureUtils;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import org.jetbrains.annotations.NotNull;
 import com.showcase.tabra.data.model.Product;
@@ -60,13 +59,7 @@ public class ProductDetailsFragment extends Fragment {
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 101;
     private FloatingActionButton fab;
-    //VIEWS
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        setHasOptionsMenu(true);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +71,14 @@ public class ProductDetailsFragment extends Fragment {
         // Create Toolbar
         Toolbar toolbar = binding.toolbarProductDetails.productDetailsToolbar;
         toolbar.inflateMenu(R.menu.product_details_menu);
+        ImageButton cancelButton = binding.toolbarProductDetails.toolbarCancelButton;
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+            }
+        });
+
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -121,7 +122,7 @@ public class ProductDetailsFragment extends Fragment {
         });
 
         // Create viewModel
-        viewModel = new ViewModelProvider(this, new ProductViewModelFactory(getActivity().getApplication()))
+        viewModel = new ViewModelProvider(requireActivity(), new ProductViewModelFactory(getActivity().getApplication()))
                 .get(ProductViewModel.class);
         viewModel.getProductFormState().observe(getViewLifecycleOwner(), new Observer<ProductFormState>() {
             @Override
@@ -129,13 +130,7 @@ public class ProductDetailsFragment extends Fragment {
                 if (productFormState == null) {
                     return;
                 }
-//                toolbar.getMenu().findItem(R.id.action_product_details_save).setEnabled(productFormState.isDataValid());
-//                if (loginFormState.getUsernameError() != null) {
-//                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-//                }
-//                if (loginFormState.getPasswordError() != null) {
-//                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-//                }
+                toolbar.getMenu().findItem(R.id.action_product_details_save).setEnabled(productFormState.isDataValid());
             }
         });
 
@@ -163,19 +158,12 @@ public class ProductDetailsFragment extends Fragment {
             @Override
             public void onChanged(Product product) {
                 if (product!= null) {
-                    setProduct(product);
+                    fillProduct(product);
                     viewModel.productDataChanged(nameTxt.getEditText().getText().toString());
                 }
             }
         });
 
-        //        ImageButton cancelButton = binding.tToolbar.toolbarCancelButton;
-//        cancelButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                getActivity().onBackPressed();
-//            }
-//        });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -211,7 +199,7 @@ public class ProductDetailsFragment extends Fragment {
     }
 
 
-    private void setProduct(Product product) {
+    private void fillProduct(Product product) {
         if (product.getName() != null) {
             nameTxt.getEditText().setText(product.getName());
         }
@@ -317,25 +305,26 @@ public class ProductDetailsFragment extends Fragment {
 
     // function to let's the user to choose image from camera or gallery
     private void chooseImage(Context context){
-        final CharSequence[] optionsMenu = {"Take Photo", "Choose from Gallery", "Exit" }; // create a menuOption Array
+        final CharSequence[] optionsMenu = {getResources().getString(R.string.product_details_action_take_photo)
+                , getResources().getString(R.string.product_details_action_choose_from)
+                , getResources().getString(R.string.product_details_action_exit) }; // create a menuOption Array
         // create a dialog for showing the optionsMenu
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         // set the items in builder
         builder.setItems(optionsMenu, new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if(optionsMenu[i].equals("Take Photo")){
+                if(optionsMenu[i].equals(getResources().getString(R.string.product_details_action_take_photo))){
                     // Open the camera and get the photo
                     Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     takePictureActivityResultLauncher.launch(takePicture);
                 }
-                else if(optionsMenu[i].equals("Choose from Gallery")){
+                else if(optionsMenu[i].equals(getResources().getString(R.string.product_details_action_choose_from))){
                     // choose from  external storage
                     Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     pickPhotoActivityResultLauncher.launch(pickPhoto);
                 }
-                else if (optionsMenu[i].equals("Exit")) {
+                else if (optionsMenu[i].equals(getResources().getString(R.string.product_details_action_exit))) {
                     dialogInterface.dismiss();
                 }
             }
@@ -364,6 +353,7 @@ public class ProductDetailsFragment extends Fragment {
 
         Picasso.get().load(PictureUtils.getImage(PictureUtils.resizeBitmap(bitmap, 400, 400), getContext().getCacheDir()))
                 .fit()
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                 .centerCrop()
                 .into(imageView);
     }

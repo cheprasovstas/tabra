@@ -3,44 +3,39 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/rec"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         tools:context=".ui.product.ProductListFragment">
 
+
     <include
             android:id="@+id/toolbar_product_list"
             layout="@layout/toolbar_product_list"
-            android:visibility="visible" />
+            android:visibility="visible"/>
 
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_products"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@+id/toolbar_product_list"
+            app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/products"
+                tools:listitem="@layout/product_list_row"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            android:id="@+id/rec"
-            tools:context=".ui.product.ProductListFragment"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar_product_list">
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="@+id/refresh_products"
+            android:layout_height="0dp">
 
-        <include android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 layout="@layout/product_list_empty"
+        <include layout="@layout/product_list_empty"
                  android:id="@+id/products_empty_view"
                  android:visibility="visible"
-                 android:layout_centerInParent="true"/>
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/product_view">
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                    android:id="@+id/refresh_products"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                <androidx.recyclerview.widget.RecyclerView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/products"
-                        tools:listitem="@layout/product_list_row"/>
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-        </LinearLayout>
+        />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

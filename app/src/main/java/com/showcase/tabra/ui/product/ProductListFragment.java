@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.*;
@@ -33,6 +34,7 @@ import com.showcase.tabra.data.model.Product;
 import com.showcase.tabra.data.remote.Result;
 import com.showcase.tabra.databinding.ProductListBinding;
 import com.showcase.tabra.ui.login.LoginActivity;
+import com.showcase.tabra.utils.Util;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import org.jetbrains.annotations.NotNull;
@@ -57,21 +59,13 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
     private ViewGroup productView;
     private ViewGroup productEmptyView;
     private ActionMode actionMode;
-    private MenuItem selectedItemCount, action_product_list_show, action_product_list_hide, action_product_list_add;
+    private MenuItem selectedItemCount, action_product_list_show, action_product_list_hide, action_product_list_add, action_product_list_share;
     private RecyclerView recyclerView;
 
-//    private FloatingActionButton fab;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-//        return super.onCreateView(inflater, container, savedInstanceState);
         // Inflate the layout for this fragment
         binding = ProductListBinding.inflate(getLayoutInflater());
         View root = binding.getRoot();
@@ -86,6 +80,8 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
         action_product_list_show.setVisible(false);
         action_product_list_hide = menu.findItem(R.id.action_product_list_hide);
         action_product_list_hide.setVisible(false);
+        action_product_list_share = menu.findItem(R.id.action_product_list_share);
+        action_product_list_share.setVisible(false);
         action_product_list_add = menu.findItem(R.id.action_product_list_add);
         action_product_list_add.setVisible(true);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -97,8 +93,6 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
                 if (item.getItemId()==R.id.action_product_list_share) {
                     if (selectionTracker.hasSelection()) {
                         shareSelectedProducts(selectionTracker.getSelection());
-                    } else {
-                        shareAllProducts();
                     }
                 }
                 if (item.getItemId()==R.id.action_item_count) {
@@ -121,17 +115,9 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
         });
 
 
-        productView = binding.productView;
+        productView = binding.products;
         productEmptyView = binding.productsEmptyView.getRoot();
 
-        FloatingActionButton fab = binding.productsEmptyView.floatingActionButton;
-        fab.bringToFront();
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addProduct();
-            }
-        });
 
         //Getting reference of swipeRefreshLayout and recyclerView
         swipeRefreshLayout = binding.refreshProducts;
@@ -208,18 +194,16 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             }
         });
 
-
         // Create viewModel
-        viewModel = new ViewModelProvider(this, new ProductViewModelFactory(getActivity().getApplication()))
+        viewModel = new ViewModelProvider(requireActivity(), new ProductViewModelFactory(getActivity().getApplication()))
                 .get(ProductViewModel.class);
-        viewModel.getProductListLiveData().observe(getActivity(), new Observer<Result<List<Product>>>() {
+        viewModel.getProductListLiveData().observe(getViewLifecycleOwner(), new Observer<Result<List<Product>>>() {
             @Override
             public void onChanged(Result<List<Product>> productsResult) {
                 if (productsResult instanceof Result.Error) {
                     if (((Result.Error) productsResult).getError() instanceof MyException.LoginFailed401ReasonException) {
-                        login();
+                        Util.cleanAuthToken(getContext());
                     }
-                    login();
                     showSearchFailed(((Result.Error) productsResult).getError().getError());
                 }
                 if (productsResult instanceof Result.Success) {
@@ -228,7 +212,7 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             }
         });
 
-        viewModel.getNewProductLiveData().observe(getActivity(), new Observer<Result<Product>>() {
+        viewModel.getNewProductLiveData().observe(getViewLifecycleOwner(), new Observer<Result<Product>>() {
             @Override
             public void onChanged(Result<Product> result) {
                 if (result instanceof Result.Error) {
@@ -242,7 +226,8 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
                 }
             }
         });
-        viewModel.getEditedProductLiveData().observe(getActivity(), new Observer<Result<Product>>() {
+
+        viewModel.getEditedProductLiveData().observe(getViewLifecycleOwner(), new Observer<Result<Product>>() {
             @Override
             public void onChanged(Result<Product> result) {
                 if (result instanceof Result.Error) {
@@ -265,8 +250,41 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             }
         });
 
+        getActivity().getSupportFragmentManager().setFragmentResultListener("add_product", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                // We use a String here, but any type that can be put in a Bundle is supported
+//                adapter.addProduct(viewModel.getProduct().getValue());
+            }
+        });
+        getActivity().getSupportFragmentManager().setFragmentResultListener("edit_product", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                // We use a String here, but any type that can be put in a Bundle is supported
+//                String id = bundle.getString("id", "");
+//                adapter.updateProduct(viewModel.getProduct().getValue());
+            }
+        });
+        getActivity().getSupportFragmentManager().setFragmentResultListener("delete_product", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                adapter.removeProduct(viewModel.getProduct().getValue());
+            }
+        });
+
+        FloatingActionButton fab = binding.productsEmptyView.floatingActionButton;
+        fab.bringToFront();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addProduct();
+            }
+        });
+
+
         return root;
     }
+
 
 
 
@@ -342,13 +360,13 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             }
         }
 
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
         intent.setType("image/*");
 
-        String text = getResources().getString(R.string.share_message_products_link) +" "+ getProductsLink();
-        intent.putExtra(Intent.EXTRA_TEXT, text);
+//        String text = getResources().getString(R.string.share_message_products_link) +" "+ getProductsLink();
+//        intent.putExtra(Intent.EXTRA_TEXT, text);
 
         startActivity(chooser);
     }
@@ -360,7 +378,7 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
                 String text = product.getName() + "\n" +
                         getResources().getString(R.string.share_message_price) +" "+ product.getPrice() + " " + product.getPrice_currency()+ " " + product.getUnitPrice() + "\n" +
                         product.getDescription() + "\n" +
-                        getResources().getString(R.string.share_message_product_link) +" "+ getProductLink(product)
+                        getResources().getString(R.string.share_message_product_link) +" "+ product.getProductUrl()
                        ;
                 i.putExtra(Intent.EXTRA_TEXT, text);
 
@@ -385,10 +403,6 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
         });
     }
 
-    private String getProductLink(Product product) {
-        return BuildConfig.API_URL+"products/"+product.getId().toString();
-    }
-
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
         try {
@@ -407,56 +421,48 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
     public void setMenuItemTitle(int selectedItemSize) {
         action_product_list_show.setVisible(selectedItemSize > 0);
         action_product_list_hide.setVisible(selectedItemSize > 0);
+        action_product_list_share.setVisible(selectedItemSize > 0);
         selectedItemCount.setVisible(selectedItemSize > 0);
         action_product_list_add.setVisible(!(selectedItemSize > 0));
         selectedItemCount.setTitle("Clean " + selectedItemSize);
     }
 
-    private void shareAllProducts() {
-        Intent sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.setType("text/plain");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, getProductsLink());
-        startActivity(Intent.createChooser(sendIntent, "Share URL"));
-    }
-
-    private String getProductsLink() {
-        return BuildConfig.API_URL+"showcase/79685952835";
-    }
-
     private void addProduct() {
         viewModel.setProduct(new Product());
+        Toast.makeText(getActivity(), getString(R.string.toast_add_new_product), Toast.LENGTH_SHORT).show();
+        showProductDetailsFragment();
 
-        Toast.makeText(getActivity(), "Add new product", Toast.LENGTH_SHORT).show();
-        // Create new fragment and transaction
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.rec, ProductDetailsFragment.class, null)
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit();
     }
 
     @Override
     public void onProductClick(View view, int position) {
         Product product = adapter.getItem(position);
-        viewModel.setProduct(adapter.getItem(position));
+        viewModel.setProduct(product);
+        Toast.makeText(getActivity(), getString(R.string.toast_edit_product), Toast.LENGTH_SHORT).show();
+        showProductDetailsFragment();
 
-        //If Selection Share Selection
-//        product.setSelected(!product.isSelected());
-//        adapter.notifyItemChanged(position);
-
-        //If Edit Item
-        Toast.makeText(getActivity(), "Edit product", Toast.LENGTH_SHORT).show();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.rec, ProductDetailsFragment.class, null)
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit();
     }
 
-    private void showSearchFailed(@StringRes Integer errorString) {
-        Toast.makeText(getActivity().getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    private void showProductDetailsFragment() {
+        // Create new fragment and transaction
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        Fragment f = fragmentManager.findFragmentByTag("ProductDetailsFragment");
+        if (f!=null) {
+            fragmentManager.beginTransaction()
+                    .remove(f)
+                    .commit();
+        }
+        fragmentManager.beginTransaction()
+                    .replace(R.id.rec, ProductDetailsFragment.class, null, "ProductDetailsFragment")
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null)
+                    .commit();
+    }
+
+    private void showSearchFailed(@StringRes Integer error) {
+        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+        login();
     }
 
 

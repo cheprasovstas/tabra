@@ -7,39 +7,46 @@
     <string name="product_price_hint">Цена</string>
     <string name="product_unit_price_hint">Единица измерения</string>
     <string name="product_description_hint">Описание</string>
-    <string name="action_product_list_add_title">Добавить</string>
-    <string name="action_product_details_save_title">Готово</string>
-    <string name="action_product_details_take_picture_title">Загрузить картинку</string>
-    <string name="title_activity_login">LoginActivity</string>
 
-    <string name="action_product_list_toolbar_title">Мои товары</string>
-    <string name="action_product_list_empty_title">На вашей витрине пока еще нет товаров</string>
+    <string name="product_list_action_add_title">Добавить</string>
+    <string name="product_list_empty_title">На вашей витрине пока еще нет товаров</string>
+    <string name="product_details_action_save_title">Готово</string>
+    <string name="activity_login_title">Авторизация</string>
 
-
-    <string name="prompt_phone">Phone</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="prompt_phone">Номер телефона</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in_short">Авторизация</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="toast_welcome">"Welcome !"</string>
     <string name="invalid_username">Не верный пользователь</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_password">Пароль должен быть >5 символов</string>
     <string name="login_failed">"Ошибка авторизации"</string>
+
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="action_product_details_delete">Delete</string>
-    <string name="action_product_details_share">Share</string>
-    <string name="action_product_list_share_title">Share</string>
+    <string name="product_details_action_delete">Delete</string>
+    <string name="product_details_action_share">Share</string>
+    <string name="product_list_action_share_title">Share</string>
+    <string name="product_details_action_take_photo">Камера</string>
 
     <string name="menu_products">Товары</string>
     <string name="menu_orders">Заказы</string>
     <string name="menu_profile">Профиль</string>
 
     <string name="login_activity_label">Tabrara</string>
+    <string name="product_list_action_hide_title">Скрыть</string>
+    <string name="product_list_action_show_title">Показать</string>
+    <string name="toast_add_new_product">Добавить новый</string>
+    <string name="toast_edit_product">Редактировать</string>
+
     <string name="share_message_price">Цена</string>
     <string name="share_message_product_link">Заказать:</string>
-    <string name="action_product_details_cancel_title">Отмена</string>
-    <string name="action_product_list_hide_title">Скрыть</string>
-    <string name="action_product_list_show_title">Показать</string>
     <string name="share_message_products_link">Каталог</string>
+
+    <string name="profile_button_logout_title">Выйти</string>
+    <string name="profile_button_link_title">Открыть</string>
+    <string name="profile_button_edit_title">Редактировать</string>
+    <string name="product_details_action_choose_from">Фотографии</string>
+    <string name="product_details_action_exit">Закрыть</string>
 
 
 </resources>

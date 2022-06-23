@@ -3,6 +3,7 @@ package com.showcase.tabra.data.remote;
 
 import com.showcase.tabra.data.model.LoginRequest;
 import com.showcase.tabra.data.model.LoginResponse;
+import com.showcase.tabra.data.model.Showcase;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -42,6 +43,9 @@ public interface RestService {
 
     @DELETE("products/{id}/")
     Call<Product> deleteProduct(@Path("id") String id);
+
+    @GET("showcase/")
+    Call<List<Showcase>> getShowcase();
 
     @POST("accounts/login/")
     Call<LoginResponse> login(@Body LoginRequest credentials);

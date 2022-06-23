@@ -2,43 +2,50 @@
     <string name="app_name">tabra</string>
     <string name="todo">TODO</string>
 
-
     <string name="product_price_hint">Price</string>
     <string name="product_name_hint">Name</string>
+    <string name="product_unit_price_hint">Unit price</string>
     <string name="product_description_hint">Description</string>
-    <string name="action_product_list_add_title">Add</string>
-    <string name="action_product_details_save_title">Save</string>
-    <string name="action_product_details_take_picture_title">Take</string>
-    <string name="title_activity_login">LoginActivity</string>
+
+    <string name="product_list_action_add_title">Add</string>
+    <string name="product_list_empty_title">На вашей витрине пока еще нет товаров</string>
+    <string name="product_details_action_save_title">Save</string>
+    <string name="activity_login_title">Login</string>
+
     <string name="prompt_phone">Phone</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="toast_welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <!-- TODO: Remove or change this placeholder text -->
 
-    <string name="action_product_details_delete">Удалить</string>
-    <string name="action_product_details_share">Поделиться</string>
-    <string name="action_product_list_share_title">Поделиться</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="product_details_action_delete">Удалить</string>
+    <string name="product_details_action_share">Поделиться</string>
+    <string name="product_details_action_take_photo">Take Photo</string>
+
+    <string name="product_list_action_share_title">Поделиться</string>
 
     <string name="menu_products">Products</string>
     <string name="menu_orders">Orders</string>
     <string name="menu_profile">Profile</string>
 
-
-    <string name="product_unit_price_hint">Unit price</string>
-    <string name="action_product_list_toolbar_title">My products</string>
-    <string name="action_product_list_empty_title">На вашей витрине пока еще нет товаров</string>
     <string name="login_activity_label">Tabrara</string>
+    <string name="product_list_action_hide_title">Скрыть</string>
+    <string name="product_list_action_show_title">Показать</string>
+    <string name="toast_add_new_product">Add new product</string>
+    <string name="toast_edit_product">Edit product</string>
+
     <string name="share_message_price">Цена</string>
     <string name="share_message_product_link">Заказать:</string>
-    <string name="action_product_details_cancel_title">Отмена</string>
-    <string name="action_product_list_hide_title">Скрыть</string>
-    <string name="action_product_list_show_title">Показать</string>
     <string name="share_message_products_link">Каталог</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="profile_button_logout_title">logout</string>
+    <string name="profile_button_link_title">Go Link</string>
+    <string name="profile_button_edit_title">Редактировать</string>
+    <string name="product_details_action_choose_from">Choose from Gallery</string>
+    <string name="product_details_action_exit">Exit</string>
 
 
 </resources>

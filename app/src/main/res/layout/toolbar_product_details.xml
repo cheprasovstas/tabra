@@ -2,10 +2,9 @@
 <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/product_details_toolbar"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/product_details_toolbar"
         android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:background="?attr/colorPrimary"
         android:gravity="start|center_vertical">
     <ImageButton
             android:id="@+id/toolbar_cancel_button"
@@ -13,5 +12,5 @@
             android:layout_height="match_parent"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_alignParentEnd="false" android:src="@android:drawable/ic_menu_close_clear_cancel"
-    />
+            tools:ignore="SpeakableTextPresentCheck" android:contentDescription="TODO"/>
 </androidx.appcompat.widget.Toolbar>

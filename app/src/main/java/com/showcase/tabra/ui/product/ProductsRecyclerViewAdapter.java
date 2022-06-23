@@ -99,8 +99,9 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
 
     public void updateProduct(Product product) {
         if (product == null) return; // we cannot update the value because it is null
-        int position = getPosition(product);
+        int position = getPosition(product.getId().toString());
         if (position!=-1) {
+            this.productList.set(position, product);
             notifyItemChanged(position);
         }
     }

@@ -19,4 +19,11 @@ public class Util {
         editor.putString(TOKEN_KEY, token);
         editor.apply();
     }
+
+    public static void cleanAuthToken(Context c) {
+        SharedPreferences prefs = c.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(TOKEN_KEY);
+        editor.apply();
+    }
 }

@@ -15,17 +15,19 @@ import java.util.List;
 
 public class ProductViewModel extends AndroidViewModel {
 
-    public LiveData<ProductFormState> getProductFormState() {
-        return productFormState;
-    }
 
     private MutableLiveData<ProductFormState> productFormState = new MutableLiveData<>();
     private ProductRepository productRepository;
+
     private MutableLiveData<Product> productLiveData = new MutableLiveData<Product>();
 
     ProductViewModel(Application application, @NonNull ProductRepository productRepository) {
         super(application);
         this.productRepository = productRepository;
+    }
+
+    public LiveData<ProductFormState> getProductFormState() {
+        return productFormState;
     }
 
     public LiveData<Result<List<Product>>> getProductListLiveData() {
@@ -41,7 +43,7 @@ public class ProductViewModel extends AndroidViewModel {
     }
 
     public void setProduct(Product product) {
-        productLiveData.setValue(product);
+        this.productLiveData.postValue(product);
     }
 
     public void addProduct(Product product) {

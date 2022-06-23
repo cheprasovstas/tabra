@@ -6,16 +6,7 @@
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                app:srcCompat="@android:drawable/ic_menu_add"
-                android:id="@+id/floatingActionButton"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="32dp" android:layout_marginRight="32dp"/>
+            android:layout_height="match_parent" android:id="@+id/relativeLayout">
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -26,12 +17,20 @@
                     app:srcCompat="@drawable/product_list_empty"
                     android:id="@+id/imageView3"/>
             <TextView
-                    android:text="@string/action_product_list_empty_title"
+                    android:text="@string/product_list_empty_title"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/textView2"
+                    android:layout_height="wrap_content" android:id="@+id/textView11"
                     android:textAlignment="center"
                     android:gravity="center"/>
         </LinearLayout>
 
     </RelativeLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:clickable="true"
+            app:srcCompat="@android:drawable/ic_menu_add"
+            android:id="@+id/floatingActionButton"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="16dp" android:layout_marginBottom="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,10 +1,7 @@
 package com.showcase.tabra.ui.login;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.PhoneNumberUtils;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
@@ -22,7 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.showcase.tabra.MainEmptyActivity;
+import com.showcase.tabra.ui.LauncherActivity;
 import com.showcase.tabra.R;
 import com.showcase.tabra.data.model.LoginResponse;
 import com.showcase.tabra.data.remote.Result;
@@ -126,12 +123,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(LoginResponse model) {
-        String welcome = getString(R.string.welcome);
+        String welcome = getString(R.string.toast_welcome);
         // TODO : initiate successful logged in experience
         Util.saveAuthToken(this, model.getToken());
 
         // go straight to main if a token is stored
-        startActivity(new Intent(this, MainEmptyActivity.class));
+        startActivity(new Intent(this, LauncherActivity.class));
         setResult(Activity.RESULT_OK);
 
         finish();

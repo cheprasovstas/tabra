@@ -64,6 +64,14 @@ public class Product {
     @Expose
     private boolean active = true;
 
+    @SerializedName("product_url")
+    @Expose
+    private String productUrl;
+
+    public String getProductUrl() {
+        return productUrl;
+    }
+
     public String getUnitPrice() {
         return unitPrice;
     }
