@@ -69,18 +69,19 @@ public class ShowcaseFragment extends Fragment {
             @Override
             public void onChanged(Result<Showcase> showcaseResult) {
                 if (showcaseResult instanceof Result.Error) {
+                    int error = ((Result.Error) showcaseResult).getError().getError();
                     if (((Result.Error) showcaseResult).getError() instanceof MyException.LoginFailed401ReasonException) {
-                        Util.cleanAuthToken(getContext());
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                        login();
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                     }
-                    showSearchFailed(((Result.Error) showcaseResult).getError().getError());
                 }
                 if (showcaseResult instanceof Result.Success) {
                     fillShowcase(((Result.Success<Showcase>) showcaseResult).getData());
                 }
             }
         });
-
-
 
         Button logoutButton = binding.logoutButton;
 
@@ -137,10 +138,6 @@ public class ShowcaseFragment extends Fragment {
         return root;
     }
 
-    private void showSearchFailed(int error) {
-        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-        login();
-    }
 
     private void login() {
         startActivity(new Intent(getActivity(), LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));

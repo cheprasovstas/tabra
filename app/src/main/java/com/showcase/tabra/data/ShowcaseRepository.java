@@ -58,8 +58,7 @@ public class ShowcaseRepository {
 
             @Override
             public void onFailure(Call<List<Showcase>> call, Throwable t) {
-                MyException e = new MyException();
-                e.setMessage(R.string.login_failed);
+                MyException e = new MyException.ConnectionFailedReasonException(t);
                 showcaseLiveData.postValue(new Result.Error(e));
                 Log.d("TAG","Response = "+t.toString());
             }

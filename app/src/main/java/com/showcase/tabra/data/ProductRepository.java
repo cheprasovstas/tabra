@@ -57,8 +57,7 @@ public class ProductRepository {
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
-                MyException e = new MyException();
-                e.setMessage(R.string.login_failed);
+                MyException e = new MyException.ConnectionFailedReasonException(t);
                 productListLiveData.setValue(new Result.Error(e));
                 Log.d("TAG","Response = "+t.toString());
             }

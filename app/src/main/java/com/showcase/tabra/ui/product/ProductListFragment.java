@@ -201,10 +201,13 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             @Override
             public void onChanged(Result<List<Product>> productsResult) {
                 if (productsResult instanceof Result.Error) {
+                    int error = ((Result.Error) productsResult).getError().getError();
                     if (((Result.Error) productsResult).getError() instanceof MyException.LoginFailed401ReasonException) {
-                        Util.cleanAuthToken(getContext());
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                        login();
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                     }
-                    showSearchFailed(((Result.Error) productsResult).getError().getError());
                 }
                 if (productsResult instanceof Result.Success) {
                     adapter.setProducts(((Result.Success<List<Product>>) productsResult).getData());
@@ -216,13 +219,16 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             @Override
             public void onChanged(Result<Product> result) {
                 if (result instanceof Result.Error) {
+                    int error = ((Result.Error) result).getError().getError();
                     if (((Result.Error) result).getError() instanceof MyException.LoginFailed401ReasonException) {
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                         login();
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (result instanceof Result.Success) {
                     adapter.addProduct(((Result.Success<Product>) result).getData());
-
                 }
             }
         });
@@ -231,8 +237,12 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
             @Override
             public void onChanged(Result<Product> result) {
                 if (result instanceof Result.Error) {
+                    int error = ((Result.Error) result).getError().getError();
                     if (((Result.Error) result).getError() instanceof MyException.LoginFailed401ReasonException) {
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                         login();
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (result instanceof Result.Success) {
@@ -458,11 +468,6 @@ public class ProductListFragment extends Fragment implements ProductsRecyclerVie
                     .setReorderingAllowed(true)
                     .addToBackStack(null)
                     .commit();
-    }
-
-    private void showSearchFailed(@StringRes Integer error) {
-        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-        login();
     }
 
 
