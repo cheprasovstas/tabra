@@ -15,5 +15,5 @@
             android:id="@+id/nav_profile"
             android:name="com.showcase.tabra.ui.showcase.ShowcaseFragment"
             android:label="@string/menu_profile"
-            tools:layout="@layout/profile_fragment"/>
+            tools:layout="@layout/showcase_fragment"/>
 </navigation>

@@ -1,6 +1,7 @@
 package com.showcase.tabra.data.remote;
 
 
+import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.model.LoginRequest;
 import com.showcase.tabra.data.model.LoginResponse;
 import com.showcase.tabra.data.model.Showcase;
@@ -13,12 +14,18 @@ import com.showcase.tabra.data.model.Product;
 import java.util.List;
 
 public interface RestService {
+
     @GET("products/")
     Call<List<Product>> getProducts();
+
+    @GET("products/")
+    Call<List<Product>> getProducts(@Query("search") String search);
 
     @Multipart
     @POST("products/")
     Call<Product> addProduct(@Part("name") RequestBody name,
+                             @Part("category") RequestBody category,
+                             @Part("new_category_name") RequestBody category_name,
                              @Part("price") Number price,
                              @Part("unit_price") RequestBody unitPrice,
                              @Part("description") RequestBody description,
@@ -34,6 +41,8 @@ public interface RestService {
     @PUT("products/{id}/")
     Call<Product> putProduct(@Path("id") String id,
                              @Part("name") RequestBody name,
+                             @Part("category") RequestBody category,
+                             @Part("new_category_name") RequestBody category_name,
                              @Part("price") Number price,
                              @Part("unit_price") RequestBody unitPrice,
                              @Part("description") RequestBody description,
@@ -53,6 +62,8 @@ public interface RestService {
     @POST("accounts/logout/")
     Call<LoginResponse> login();
 
+    @GET("categories/")
+    Call<List<Category>> getCategories();
 }
 
 

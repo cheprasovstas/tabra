@@ -2,11 +2,103 @@
 
     <!--Floating label text style-->
     <style name="MyHintText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="android:textColor">@color/purple_200</item>
+        <item name="boxBackgroundColor">@color/white</item>
     </style>
+
     <!--Input field style-->
     <style name="MyEditText" parent="Widget.AppCompat.EditText">
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
     </style>
+
+
+
+
+
+
+    <!-- FAB-->
+    <style name="Widget.App.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">@style/myCustomThemeForFab</item>
+        <item name="shapeAppearanceOverlay">@style/customFAB</item>
+    </style>
+    <style name="myCustomThemeForFab" parent="">
+        <!--this attribute gives makes the change in the background of the FAB-->
+        <item name="colorSecondary">@color/light_primary_container</item>
+        <!--this attribute gives makes the change in the text and icon color of the FAB-->
+        <item name="colorOnSecondary">@color/light_primary</item>
+    </style>
+    <style name="customFAB">
+        <!--for the extended FAB the cornerFamily is given the value as the cut-->
+        <item name="cornerFamily">rounded</item>
+        <!--and the cornerSize makes the cut for all 4 corners of the FAB as 10dp-->
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <!--ExtendedFloatingActionButton-->
+    <style name="Widget.App.ExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+
+        <!--the following attribute will changes in the appearance
+            of the extended FAB in terms of colors-->
+        <item name="materialThemeOverlay">@style/myCustomThemeForExtendedFab</item>
+
+        <!--the following attribute will change in the
+            shape appearance of the extended FAB-->
+        <item name="shapeAppearanceOverlay">@style/customExtendedFAB</item>
+
+        <!--to make the code look cleaner and readable, the above
+            two children are implemented separately-->
+    </style>
+    <!--this style is the child of the shapeAppearanceOverlay attribute
+    which in turn is the child of materialThemeOverlay-->
+    <style name="customExtendedFAB">
+        <!--for the extended FAB the cornerFamily is given the value as the cut-->
+        <item name="cornerFamily">rounded</item>
+        <!--and the cornerSize makes the cut for all 4 corners of the FAB as 10dp-->
+        <item name="cornerSize">16dp</item>
+    </style>
+    <!--Here no need of mentioning the parent-->
+    <!--because this is already the child of the
+        shapeAppearanceOverlay which in turn is the child-->
+    <!--of the Widget.App.ExtendedFloatingActionButton-->
+    <style name="myCustomThemeForExtendedFab" parent="">
+        <!--this attribute gives makes the change in the background of the FAB-->
+        <item name="colorSecondary">@color/light_primary_container</item>
+        <!--this attribute gives makes the change in the text and icon color of the FAB-->
+        <item name="colorOnSecondary">@color/light_primary</item>
+    </style>
+
+
+
+    <!-- BottomNavigationView-->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <item name="colorPrimary">@color/light_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+
+
+    <!--Button-->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="shapeAppearanceOverlay">@style/customButton</item>
+    </style>
+    <style name="customButton">
+        <!--for the extended FAB the cornerFamily is given the value as the cut-->
+        <item name="cornerFamily">rounded</item>
+        <!--and the cornerSize makes the cut for all 4 corners of the FAB as 10dp-->
+        <item name="cornerSize">16dp</item>
+    </style>
+
+
+    <!--SearchView-->
+    <style name="Widget.App.SearchView" parent="Widget.AppCompat.Light.SearchView">
+        <item name="queryBackground">@null</item>
+        <item name="submitBackground">@null</item>
+        <item name="searchHintIcon">@null</item>
+    </style>
+
+
 </resources>

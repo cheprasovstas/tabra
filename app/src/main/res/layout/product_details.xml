@@ -15,8 +15,6 @@
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                          android:orientation="vertical" android:paddingLeft="16dp" android:paddingRight="16dp">
                 <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
@@ -29,42 +27,70 @@
                             android:layout_alignBottom="@id/product_image_details"
                             android:layout_alignRight="@id/product_image_details" android:layout_marginRight="16dp"
                             android:layout_marginBottom="16dp"/>
+
                     <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/product_image_details" android:contentDescription="@string/todo"
-                            android:minHeight="182dp" android:scaleType="fitCenter" tools:ignore="ImageContrastCheck"
-                    />
+                        android:id="@+id/product_image_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/todo"
+                        android:minHeight="182dp"
+                        android:scaleType="centerCrop"
+                        tools:ignore="ImageContrastCheck" />
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/product_category_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/product_image_details"
+                        android:layout_centerInParent="false"
+                        android:layout_marginTop="32dp"
+                        android:baselineAligned="false">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/autoCompleteTextView"
+                            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/product_name_details"
-                            android:layout_below="@id/product_image_details"
-                            app:boxBackgroundColor="@color/white"
-                            android:layout_marginTop="32dp"
-                            android:baselineAligned="false" android:layout_centerInParent="false"
-                    >
+                            android:hint="Категория"
+                            android:inputType="text"
+                            android:singleLine="true" />
+
+                        <!--com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:editable="false"
+                            android:hint="Категория"
+                            android:inputType="text"
+                            android:maxLength="100"
+                            android:maxLines="1"
+                            android:singleLine="false"
+                            android:textStyle="bold" /-->
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/product_name_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/product_category_details"
+                        android:layout_centerInParent="false"
+                        android:layout_marginTop="32dp"
+                        android:baselineAligned="false">
 
                         <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="@string/product_name_hint" android:inputType="text"
-                                android:maxLines="1"
-                                android:maxLength="100"
-                                android:singleLine="false"
-                        />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/product_name_hint"
+                            android:inputType="text"
+                            android:maxLength="100"
+                            android:maxLines="1"
+                            android:singleLine="false" />
                     </com.google.android.material.textfield.TextInputLayout>
-                    <Switch
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/product_active_details"
-                            android:layout_below="@id/product_image_details" android:layout_alignParentEnd="true"
-                            android:layout_alignParentBottom="false" android:layout_alignParentLeft="false"
-                            android:layout_alignParentRight="false"/>
+
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_name_details"
-                            android:id="@+id/product_price_details" app:boxBackgroundColor="@color/white"
+                            android:id="@+id/product_price_details"
                             android:layout_marginTop="32dp">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -77,7 +103,7 @@
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_price_details"
-                            android:id="@+id/product_unit_price_details" app:boxBackgroundColor="@color/white"
+                            android:id="@+id/product_unit_price_details"
                             android:layout_marginTop="32dp">
                         <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
@@ -89,7 +115,7 @@
                     <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:layout_below="@id/product_unit_price_details"
-                            android:id="@+id/product_description_details" app:boxBackgroundColor="@color/white"
+                            android:id="@+id/product_description_details"
                             android:layout_marginTop="32dp">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -98,8 +124,8 @@
                                 android:maxLength="4000"
                                 android:hint="@string/product_description_hint"/>
                     </com.google.android.material.textfield.TextInputLayout>
+
                 </RelativeLayout>
-            </LinearLayout>
         </ScrollView>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

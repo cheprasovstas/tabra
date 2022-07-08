@@ -110,7 +110,6 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
         int position = this.productList.indexOf(product);
         this.productList.remove(position);
         notifyDataSetChanged();
-//        notifyItemRemoved(position);
     }
 
     public void setTracker(SelectionTracker<String> tracker) {
@@ -150,7 +149,7 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
         }
 
         public void bind(Product product) {
-            this.productNameTextView.setText(product.getName());
+            this.productNameTextView.setText(product.getName()+ ( product.getCategoryName() != null ? " ("+product.getCategoryName()+")": ""));
             if (product.getPrice()!=null) {
                 this.productPriceTextView.setText(product.getPrice().toString()
                         +(product.getPrice_currency()!=null ? " "+product.getPrice_currency().getSymbol(): ""));

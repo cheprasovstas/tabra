@@ -20,8 +20,8 @@ import com.showcase.tabra.data.MyException;
 import com.showcase.tabra.data.model.Product;
 import com.showcase.tabra.data.model.Showcase;
 import com.showcase.tabra.data.remote.Result;
-import com.showcase.tabra.databinding.ProductListBinding;
-import com.showcase.tabra.databinding.ProfileFragmentBinding;
+import com.showcase.tabra.databinding.ShowcaseFragmentBinding;
+import com.showcase.tabra.ui.common.DataFragment;
 import com.showcase.tabra.ui.login.LoginActivity;
 import com.showcase.tabra.ui.product.ProductViewModel;
 import com.showcase.tabra.ui.product.ProductViewModelFactory;
@@ -29,10 +29,10 @@ import com.showcase.tabra.utils.Util;
 
 import java.util.List;
 
-public class ShowcaseFragment extends Fragment {
+public class ShowcaseFragment extends DataFragment {
 
     private ShowcaseViewModel mViewModel;
-    private ProfileFragmentBinding binding;
+    private ShowcaseFragmentBinding binding;
     private TextView phoneTextView;
     private TextView telegramTextView;
     private String showcaseUrl;
@@ -55,7 +55,7 @@ public class ShowcaseFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        binding = ProfileFragmentBinding.inflate(inflater, container, false);
+        binding = ShowcaseFragmentBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         titleTextView = binding.titleTextView;
@@ -67,18 +67,12 @@ public class ShowcaseFragment extends Fragment {
                 .get(ShowcaseViewModel.class);
         mViewModel.getShowcaseLiveData().observe(getViewLifecycleOwner(), new Observer<Result<Showcase>>() {
             @Override
-            public void onChanged(Result<Showcase> showcaseResult) {
-                if (showcaseResult instanceof Result.Error) {
-                    int error = ((Result.Error) showcaseResult).getError().getError();
-                    if (((Result.Error) showcaseResult).getError() instanceof MyException.LoginFailed401ReasonException) {
-                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                        login();
-                    } else {
-                        Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                    }
+            public void onChanged(Result<Showcase> result) {
+                if (result instanceof Result.Error) {
+                    failResult((Result.Error) result);
                 }
-                if (showcaseResult instanceof Result.Success) {
-                    fillShowcase(((Result.Success<Showcase>) showcaseResult).getData());
+                if (result instanceof Result.Success) {
+                    fillShowcase(((Result.Success<Showcase>) result).getData());
                 }
             }
         });
@@ -86,9 +80,13 @@ public class ShowcaseFragment extends Fragment {
         Button logoutButton = binding.logoutButton;
 
         Button editButton = binding.editButton;
-//        editButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShowcaseEditFragment blankFragment = new ShowcaseEditFragment();
+                blankFragment.show(getActivity().getSupportFragmentManager(),blankFragment.getTag());
+
+
 //                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 //                builder.setTitle("Comments");
 //
@@ -115,8 +113,8 @@ public class ShowcaseFragment extends Fragment {
 //                });
 //                builder.show();
 //
-//            }
-//        });
+            }
+        });
 
         Button shareLinkButton = binding.shareLinkButton;
         shareLinkButton.setOnClickListener(new View.OnClickListener() {
@@ -138,25 +136,19 @@ public class ShowcaseFragment extends Fragment {
         return root;
     }
 
-
-    private void login() {
-        startActivity(new Intent(getActivity(), LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//        finish();
-    }
-
     private void fillShowcase(Showcase showcase) {
         if (showcase==null) {
             return;
         }
-        titleTextView.setText(showcase.getTitle());
-        phoneTextView.setText(showcase.getContactPhone());
-        telegramTextView.setText(showcase.getContactTelegram());
+        if (showcase.getTitle()!=null) {
+            titleTextView.setText(showcase.getTitle());
+        }
         showcaseUrl = showcase.getShowcaseUrl();
         if (showcase.getContactPhone()!=null) {
-
+            phoneTextView.setText(getResources().getString(R.string.showcase_contact_phone_title)+": "+showcase.getContactPhone());
         }
         if (showcase.getContactTelegram()!=null) {
-
+            telegramTextView.setText(getResources().getString(R.string.showcase_contact_telegram_title)+": "+showcase.getContactTelegram());
         }
     }
 }

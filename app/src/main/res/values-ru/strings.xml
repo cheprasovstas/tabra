@@ -48,6 +48,9 @@
     <string name="product_details_action_choose_from">Фотографии</string>
     <string name="product_details_action_exit">Закрыть</string>
     <string name="connection_failed">Ошибка подключения к серверу</string>
+    <string name="showcase_contact_phone_title">Whatsapp</string>
+    <string name="showcase_contact_telegram_title">Telegram</string>
+    <string name="not_found_failed">Ресурс не найден</string>
 
 
 </resources>

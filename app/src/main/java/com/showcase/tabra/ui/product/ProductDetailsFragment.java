@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -24,6 +26,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -34,7 +37,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.showcase.tabra.BuildConfig;
 import com.showcase.tabra.R;
+import com.showcase.tabra.data.model.Category;
+import com.showcase.tabra.data.remote.Result;
 import com.showcase.tabra.databinding.ProductDetailsBinding;
+import com.showcase.tabra.ui.common.DataFragment;
 import com.showcase.tabra.utils.PictureUtils;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -46,19 +52,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDetailsFragment extends Fragment {
+public class ProductDetailsFragment extends DataFragment {
 
     private ProductViewModel viewModel;
     private Bitmap newImage;
     private ImageView imageView;
-    private TextInputLayout nameTxt, priceTxt, descriptionTxt;
+    private TextInputLayout categoryTxt, nameTxt, priceTxt, descriptionTxt;
     private TextInputLayout unitPrice;
-    private Switch active;
+    private Switch toolbarSwitch;
 
     private ProductDetailsBinding binding;
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 101;
     private FloatingActionButton fab;
+    private ArrayAdapter<Category> adapter;
 
 
     @Override
@@ -71,6 +78,11 @@ public class ProductDetailsFragment extends Fragment {
         // Create Toolbar
         Toolbar toolbar = binding.toolbarProductDetails.productDetailsToolbar;
         toolbar.inflateMenu(R.menu.product_details_menu);
+        Menu menu = toolbar.getMenu();
+        MenuItem product_active_switch = menu.findItem(R.id.product_active_switch);
+        toolbarSwitch = (Switch)product_active_switch.getActionView().findViewById(R.id.show_hide_action);
+
+
         ImageButton cancelButton = binding.toolbarProductDetails.toolbarCancelButton;
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,36 +91,21 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.action_product_details_save) {
-                    Product product = viewModel.getProduct().getValue();
-
-                    product.setName(nameTxt.getEditText().getText().toString());
-                    if (priceTxt.getEditText() != null & !"".equals(priceTxt.getEditText().getText().toString())) {
-                        product.setPrice(Float.valueOf(priceTxt.getEditText().getText().toString()).floatValue());
-                    }
-                    if (unitPrice.getEditText() != null) {
-                        product.setUnitPrice(unitPrice.getEditText().getText().toString());
-                    }
-                    product.setActive(active.isChecked());
-                    if (descriptionTxt.getEditText() != null) {
-                        product.setDescription(descriptionTxt.getEditText().getText().toString());
-                    }
-                    if (newImage!=null) {
-                        product.setF(PictureUtils.getImage(PictureUtils.resizeBitmap(newImage, 400, 400), getContext().getCacheDir()));
-                    }
+                    Product product = viewModel.getEditProduct().getValue();
                     saveProduct(product);
                 }
                 if (id == R.id.action_product_details_delete) {
-                    Product product = viewModel.getProduct().getValue();
-
+                    Product product = viewModel.getEditProduct().getValue();
                     deleteProduct(product);
                 }
                 if (id == R.id.action_product_details_share) {
-                    Product product = viewModel.getProduct().getValue();
+                    Product product = viewModel.getEditProduct().getValue();
 
                     Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     sendIntent.setType("text/plain");
@@ -134,6 +131,65 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        //Creating the instance of ArrayAdapter containing list of fruit names
+        adapter = new ArrayAdapter<Category>(getContext(), android.R.layout.select_dialog_item);
+
+        //View for categories
+        viewModel.getCategoryListLiveData().observe(getViewLifecycleOwner(), new Observer<Result<List<Category>>>() {
+            @Override
+            public void onChanged(Result<List<Category>> result) {
+                if (result == null) {
+                    return;
+                }
+                if (result instanceof Result.Error) {
+                    failResult((Result.Error) result);
+                }
+                if (result instanceof Result.Success) {
+                    adapter.clear();
+                    adapter.addAll(((Result.Success<List<Category>>) result).getData());
+
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }) ;
+
+        //Getting the instance of AutoCompleteTextView
+        AppCompatAutoCompleteTextView autoCompleteTextView = binding.autoCompleteTextView;
+        autoCompleteTextView.setThreshold(1);//will start working from first character
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                autoCompleteTextView.showDropDown();
+                return false;
+            }
+        });
+        autoCompleteTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if (editable.toString().isEmpty()) {
+                    categoryTxt.setHelperText(null);
+                    return;
+                }
+                if (getCategoryByName(editable.toString())!=null) {
+                    categoryTxt.setHelperText(null);
+                    return;
+                }
+                categoryTxt.setHelperText("Новая категория");
+            }
+        });
+
 
         fab = binding.floatingActionButtonAddPictire;
         fab.bringToFront();
@@ -145,64 +201,61 @@ public class ProductDetailsFragment extends Fragment {
                 }
             }
         });
-
+        this.categoryTxt = binding.productCategoryDetails;
         this.nameTxt = binding.productNameDetails;
         this.priceTxt = binding.productPriceDetails;
         this.descriptionTxt = binding.productDescriptionDetails;
         this.imageView = binding.productImageDetails;
         this.unitPrice = binding.productUnitPriceDetails;
-        this.active = binding.productActiveDetails;
 
-        //View model
-        viewModel.getProduct().observe(getViewLifecycleOwner(), new Observer<Product>() {
+
+        //View for edit product
+        viewModel.getEditProduct().observe(getViewLifecycleOwner(), new Observer<Product>() {
             @Override
             public void onChanged(Product product) {
                 if (product!= null) {
                     fillProduct(product);
-                    viewModel.productDataChanged(nameTxt.getEditText().getText().toString());
                 }
             }
         });
-
-
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // ignore
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // ignore
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 viewModel.productDataChanged(nameTxt.getEditText().getText().toString());
             }
         };
         this.nameTxt.getEditText().addTextChangedListener(afterTextChangedListener);
-//        this.priceTxt.getEditText().addTextChangedListener(afterTextChangedListener);
-//        nameTxt.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                    loginViewModel.login(usernameEditText.getText().toString(),
-//                            passwordEditText.getText().toString());
-//                }
-//                return false;
-//            }
-//        });
-
 
         return root;
     }
 
+    private Category getCategoryByName(String s) {
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).getName().equals(s)) {
+                return adapter.getItem(i);
+            }
+        }
+        return null;
+    }
+
 
     private void fillProduct(Product product) {
+        if (product.getCategoryName() != null) {
+            categoryTxt.getEditText().setText(product.getCategoryName());
+        }
         if (product.getName() != null) {
             nameTxt.getEditText().setText(product.getName());
         }
+        viewModel.productDataChanged(product.getName());
+
         if (product.getPrice() != null) {
             priceTxt.getEditText().setText(product.getPrice().toString());
         }
@@ -216,13 +269,42 @@ public class ProductDetailsFragment extends Fragment {
                 .placeholder(R.drawable.product_list_placeholder)
                 //               .error(R.drawable.user_placeholder_error)
                 .into(imageView);
-        active.setChecked(product.isActive());
-
+        toolbarSwitch.setChecked(product.isActive());
     }
 
 
     private void saveProduct(Product product) {
         hideKeyboard();
+
+        //category
+        if (categoryTxt.getEditText().getText() != null & !"".equals(categoryTxt.getEditText().getText().toString())){
+            Category category = getCategoryByName(categoryTxt.getEditText().getText().toString());
+            if (category!=null) {
+                product.setCategory_id(category.getId());
+            } else {
+                product.setCategory_id(null);
+                product.setCategoryName(categoryTxt.getEditText().getText().toString());
+            }
+        } else {
+            product.setCategory_id(null);
+            product.setCategoryName("");
+        }
+
+        //name
+        product.setName(nameTxt.getEditText().getText().toString());
+        if (priceTxt.getEditText() != null & !"".equals(priceTxt.getEditText().getText().toString())) {
+            product.setPrice(Float.valueOf(priceTxt.getEditText().getText().toString()).floatValue());
+        }
+        if (unitPrice.getEditText() != null) {
+            product.setUnitPrice(unitPrice.getEditText().getText().toString());
+        }
+        product.setActive(toolbarSwitch.isChecked());
+        if (descriptionTxt.getEditText() != null) {
+            product.setDescription(descriptionTxt.getEditText().getText().toString());
+        }
+        if (newImage!=null) {
+            product.setF(PictureUtils.getImage(PictureUtils.resizeBitmap(newImage, 400, 400), getContext().getCacheDir()));
+        }
         Bundle result = new Bundle();
         if (product.getId()!=null) {
             viewModel.editProduct(product);
@@ -231,8 +313,6 @@ public class ProductDetailsFragment extends Fragment {
             viewModel.addProduct(product);
             getParentFragmentManager().setFragmentResult("add_product", result);
         }
-        // The child fragment needs to still set the result on its parent fragment manager
-
         getActivity().onBackPressed();
     }
 

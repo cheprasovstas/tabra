@@ -4,21 +4,23 @@ import android.content.Context;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
 import com.showcase.tabra.R;
+import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.model.Product;
 import com.showcase.tabra.data.remote.RestClient;
 import com.showcase.tabra.data.remote.RestService;
 import com.showcase.tabra.data.remote.Result;
 import com.showcase.tabra.utils.ExUtil;
+
+import org.jetbrains.annotations.Nullable;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Part;
 
 import java.io.File;
 import java.util.List;
@@ -28,6 +30,7 @@ public class ProductRepository {
     private static volatile ProductRepository instance;
     private RestService apiService;
     private MutableLiveData<Result<List<Product>>> productListLiveData = new MutableLiveData<Result<List<Product>>>();
+    private MutableLiveData<Result<List<Category>>> categoryListLiveData = new MutableLiveData<Result<List<Category>>>();
     private MutableLiveData<Result<Product>> newProductLiveData = new MutableLiveData<Result<Product>>();
     private MutableLiveData<Result<Product>> editedProductLiveData = new MutableLiveData<Result<Product>>();
 
@@ -42,9 +45,15 @@ public class ProductRepository {
         return instance;
     }
 
-    private void searchProducts() {
-        apiService.getProducts()
-        .enqueue(new Callback<List<Product>>() {
+    public void searchProducts(@Nullable String searchText) {
+        Call<List<Product>> call;
+        if (searchText != null) {
+            call = apiService.getProducts(searchText);
+        } else {
+            call = apiService.getProducts();
+        }
+
+        call.enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
@@ -54,7 +63,6 @@ public class ProductRepository {
                 }
                 Log.d("TAG","Response = OK");
             }
-
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
                 MyException e = new MyException.ConnectionFailedReasonException(t);
@@ -65,7 +73,7 @@ public class ProductRepository {
     }
 
     public LiveData<Result<List<Product>>> getProductListLiveData() {
-        searchProducts();
+        searchProducts(null);
         return productListLiveData;
     }
 
@@ -89,6 +97,8 @@ public class ProductRepository {
 
     public void addProduct(Product product) {
         RequestBody namePart = RequestBody.create(MediaType.parse("application/json"), product.getName());
+        RequestBody catIdPart = RequestBody.create(MediaType.parse("application/json"), (product.getCategory_id() != null) ? product.getCategory_id().toString(): "");
+        RequestBody catNamePart = (product.getCategoryName() != null) ? RequestBody.create(MediaType.parse("application/json"), product.getCategoryName()): null;
         RequestBody unitPricePart = RequestBody.create(MediaType.parse("application/json"), product.getUnitPrice());
         RequestBody descriptionPart = RequestBody.create(MediaType.parse("application/json"), product.getDescription());
         MultipartBody.Part image = null;
@@ -99,6 +109,8 @@ public class ProductRepository {
         }
         Call<Product> call = apiService.addProduct(
                 namePart,
+                catIdPart,
+                catNamePart,
                 product.getPrice(),
                 unitPricePart,
                 descriptionPart,
@@ -127,6 +139,8 @@ public class ProductRepository {
 
     public void updateProduct(Product product) {
         RequestBody namePart = RequestBody.create(MediaType.parse("application/json"), product.getName());
+        RequestBody catIdPart = RequestBody.create(MediaType.parse("application/json"), (product.getCategory_id() != null) ? product.getCategory_id().toString(): "");
+        RequestBody catNamePart = (product.getCategoryName() != null) ? RequestBody.create(MediaType.parse("application/json"), product.getCategoryName()): null;
         RequestBody descriptionPart = RequestBody.create(MediaType.parse("application/json"), product.getDescription());
         RequestBody unitPricePart = RequestBody.create(MediaType.parse("application/json"), product.getUnitPrice());
         MultipartBody.Part image = null;
@@ -139,6 +153,8 @@ public class ProductRepository {
         Call<Product> call = apiService.putProduct(
                 product.getId().toString(),
                 namePart,
+                catIdPart,
+                catNamePart,
                 product.getPrice(),
                 unitPricePart,
                 descriptionPart,
@@ -192,5 +208,31 @@ public class ProductRepository {
 
     public LiveData<Result<Product>> getEditedProductLiveData() {
         return editedProductLiveData;
+    }
+
+    public LiveData<Result<List<Category>>> getCategoryListLiveData() {
+        searchCategories();
+        return categoryListLiveData;
+    }
+
+    private void searchCategories() {
+        Call<List<Category>> call = apiService.getCategories();
+        call.enqueue(new Callback<List<Category>>() {
+            @Override
+            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    categoryListLiveData.setValue(new Result.Error(ExUtil.convertUnsuccessfulResponseToException(response)));
+                } else {
+                    categoryListLiveData.setValue(new Result.Success(response.body()));
+                }
+                Log.d("TAG","Response = OK");
+            }
+            @Override
+            public void onFailure(Call<List<Category>> call, Throwable t) {
+                MyException e = new MyException.ConnectionFailedReasonException(t);
+                categoryListLiveData.setValue(new Result.Error(e));
+                Log.d("TAG","Response = "+t.toString());
+            }
+        });
     }
 }

@@ -23,6 +23,30 @@ public class Product {
     @Expose
     private String name;
 
+    public UUID getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(UUID category_id) {
+        this.category_id = category_id;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    @SerializedName("category")
+    @Expose
+    private UUID category_id;
+
+    @SerializedName("category_name")
+    @Expose
+    private String categoryName;
+
     @SerializedName("description")
     @Expose
     private String description;

@@ -2,11 +2,13 @@ package com.showcase.tabra.ui.product;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.showcase.tabra.R;
 import com.showcase.tabra.data.ProductRepository;
+import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.model.Product;
 import com.showcase.tabra.data.remote.Result;
 
@@ -15,9 +17,9 @@ import java.util.List;
 
 public class ProductViewModel extends AndroidViewModel {
 
+    private ProductRepository productRepository;
 
     private MutableLiveData<ProductFormState> productFormState = new MutableLiveData<>();
-    private ProductRepository productRepository;
 
     private MutableLiveData<Product> productLiveData = new MutableLiveData<Product>();
 
@@ -38,11 +40,11 @@ public class ProductViewModel extends AndroidViewModel {
         productRepository.deleteProduct(product);
     }
 
-    public LiveData<Product> getProduct() {
+    public LiveData<Product> getEditProduct() {
         return this.productLiveData;
     }
 
-    public void setProduct(Product product) {
+    public void setEditProduct(Product product) {
         this.productLiveData.postValue(product);
     }
 
@@ -78,5 +80,15 @@ public class ProductViewModel extends AndroidViewModel {
         }
         return !username.trim().isEmpty();
     }
+
+    public void searchProducts(String s) {
+        productRepository.searchProducts(s);
+    }
+
+    public LiveData<Result<List<Category>>> getCategoryListLiveData() {
+        return productRepository.getCategoryListLiveData();
+    }
+
+
 
 }

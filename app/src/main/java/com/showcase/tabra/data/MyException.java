@@ -28,4 +28,16 @@ public class MyException extends Throwable {
             setMessage(R.string.login_failed);
         }
     }
+
+    public static class NotFound404ReasonException extends MyException {
+        public NotFound404ReasonException() {
+            setMessage(R.string.not_found_failed);
+        }
+    }
+
+    public static class CommonException extends MyException {
+        public CommonException() {
+            setMessage(R.string.connection_failed);
+        }
+    }
 }
