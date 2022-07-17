@@ -24,7 +24,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="product_details_action_delete">Delete</string>
-    <string name="product_details_action_share">Share</string>
     <string name="product_list_action_share_title">Share</string>
     <string name="product_details_action_take_photo">Камера</string>
 
@@ -33,8 +32,10 @@
     <string name="menu_profile">Профиль</string>
 
     <string name="login_activity_label">Tabrara</string>
-    <string name="product_list_action_hide_title">Скрыть</string>
-    <string name="product_list_action_show_title">Показать</string>
+
+    <string name="product_list_action_show_title">Видимость</string>
+    <string name="product_list_action_instore_title">В наличии</string>
+    <string name="product_list_action_select_title">Выбрать</string>
     <string name="toast_add_new_product">Добавить новый</string>
     <string name="toast_edit_product">Редактировать</string>
 

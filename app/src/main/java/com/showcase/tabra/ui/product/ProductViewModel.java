@@ -2,7 +2,6 @@ package com.showcase.tabra.ui.product;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,6 +10,8 @@ import com.showcase.tabra.data.ProductRepository;
 import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.model.Product;
 import com.showcase.tabra.data.remote.Result;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class ProductViewModel extends AndroidViewModel {
         productRepository.addProduct(product);
     }
 
-    public void editProduct(Product product) {
+    public void updateProduct(Product product) {
         productRepository.updateProduct(product);
     }
 
@@ -81,8 +82,8 @@ public class ProductViewModel extends AndroidViewModel {
         return !username.trim().isEmpty();
     }
 
-    public void searchProducts(String s) {
-        productRepository.searchProducts(s);
+    public void searchProducts(String name, String category, @Nullable Boolean inStore, @Nullable Boolean archive) {
+        productRepository.searchProducts(name, category, inStore, archive);
     }
 
     public LiveData<Result<List<Category>>> getCategoryListLiveData() {

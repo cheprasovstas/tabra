@@ -11,6 +11,7 @@ import com.showcase.tabra.data.LoginRepository;
 import com.showcase.tabra.R;
 import com.showcase.tabra.data.model.LoginResponse;
 import com.showcase.tabra.data.remote.Result;
+import com.showcase.tabra.utils.Util;
 
 public class LoginViewModel extends AndroidViewModel {
 
@@ -33,6 +34,7 @@ public class LoginViewModel extends AndroidViewModel {
 
     public void login(String username, String password) {
         // can be launched in a separate asynchronous job
+        Util.cleanAuthToken(getApplication());
         loginRepository.login(username, password);
     }
 

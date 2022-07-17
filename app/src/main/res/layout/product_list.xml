@@ -7,17 +7,57 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.product.ProductListFragment">
 
-
     <include
         android:id="@+id/toolbar_product_list"
         layout="@layout/toolbar_product_list"
         android:visibility="visible" />
 
+
+    <HorizontalScrollView
+        android:id="@+id/chipGroupHorizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_product_list">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_available_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="В наличии"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chip_available_filter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:singleLine="true"
+                app:singleSelection="true" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </HorizontalScrollView>
+
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_product_list">
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupHorizontalScrollView">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refresh_products"
@@ -32,19 +72,33 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
+            android:id="@+id/fab_add_products"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="false"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
             android:src="@drawable/ic_add"
             android:text="Добавить"
             app:fabSize="normal"
             app:icon="@drawable/ic_add" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_share_products"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:src="@android:drawable/ic_menu_share"
+            android:text="Отправить"
+            android:visibility="gone"
+            app:fabSize="normal"
+            app:icon="@android:drawable/ic_menu_share" />
     </RelativeLayout>
 
     <ProgressBar

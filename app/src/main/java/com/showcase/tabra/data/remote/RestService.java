@@ -11,6 +11,8 @@ import retrofit2.Call;
 import retrofit2.http.*;
 import com.showcase.tabra.data.model.Product;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public interface RestService {
@@ -19,7 +21,12 @@ public interface RestService {
     Call<List<Product>> getProducts();
 
     @GET("products/")
-    Call<List<Product>> getProducts(@Query("search") String search);
+    Call<List<Product>> getProducts(
+            @Nullable @Query("search") String search,
+            @Nullable @Query("category") String category,
+            @Nullable @Query("in_store") Boolean in_store,
+            @Nullable @Query("active") Boolean active
+    );
 
     @Multipart
     @POST("products/")
@@ -30,6 +37,7 @@ public interface RestService {
                              @Part("unit_price") RequestBody unitPrice,
                              @Part("description") RequestBody description,
                              @Part("active") boolean activePart,
+                             @Part("in_store") boolean inStorePart,
                              @Part MultipartBody.Part image);
 //    Call<Product> addProduct(@Part("name") RequestBody name, @Part MultipartBody.Part image);
     //Call<Product> addProduct(@Body Product product);
@@ -47,6 +55,7 @@ public interface RestService {
                              @Part("unit_price") RequestBody unitPrice,
                              @Part("description") RequestBody description,
                              @Part("active") boolean activePart,
+                             @Part("in_store") boolean inStorePart,
                              @Part MultipartBody.Part image);
 //    Call<Product> putProduct(@Path("id") String id, @Body Product product, @Part MultipartBody.Part image);
 

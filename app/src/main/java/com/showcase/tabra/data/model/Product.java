@@ -88,6 +88,18 @@ public class Product {
     @Expose
     private boolean active = true;
 
+    @SerializedName("in_store")
+    @Expose
+    private boolean inStore = true;
+
+    public boolean isInStore() {
+        return inStore;
+    }
+
+    public void setInStore(boolean inStore) {
+        this.inStore = inStore;
+    }
+
     @SerializedName("product_url")
     @Expose
     private String productUrl;

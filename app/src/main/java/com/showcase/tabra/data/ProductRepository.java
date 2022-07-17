@@ -45,13 +45,13 @@ public class ProductRepository {
         return instance;
     }
 
-    public void searchProducts(@Nullable String searchText) {
-        Call<List<Product>> call;
-        if (searchText != null) {
-            call = apiService.getProducts(searchText);
-        } else {
-            call = apiService.getProducts();
-        }
+
+    public void  searchProducts(@Nullable String searchText,
+                                @Nullable String category,
+                                @Nullable Boolean inStore,
+                                @Nullable Boolean archive
+    ) {
+        Call<List<Product>> call = apiService.getProducts(searchText, category, inStore, archive);
 
         call.enqueue(new Callback<List<Product>>() {
             @Override
@@ -73,9 +73,10 @@ public class ProductRepository {
     }
 
     public LiveData<Result<List<Product>>> getProductListLiveData() {
-        searchProducts(null);
+//        searchProducts(null, null);
         return productListLiveData;
     }
+
 
 //    public LiveData<Product> getProductById(String id) {
 //        Call<Product> call = apiService.getProductById(id);
@@ -115,6 +116,7 @@ public class ProductRepository {
                 unitPricePart,
                 descriptionPart,
                 product.isActive(),
+                product.isInStore(),
                 image);
         call.enqueue(new Callback<Product>() {
             @Override
@@ -159,6 +161,7 @@ public class ProductRepository {
                 unitPricePart,
                 descriptionPart,
                 product.isActive(),
+                product.isInStore(),
                 image);
         call.enqueue(new Callback<Product>() {
             @Override

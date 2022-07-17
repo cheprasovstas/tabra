@@ -10,17 +10,21 @@ import android.os.*;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.*;
@@ -28,8 +32,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.showcase.tabra.R;
+import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.model.Product;
 import com.showcase.tabra.data.remote.Result;
 import com.showcase.tabra.databinding.ProductListBinding;
@@ -52,17 +59,22 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
     private ProductsRecyclerViewAdapter adapter;
     private ProductViewModel viewModel;
 
+    private MutableLiveData<ProductFormFilter> productFormFilterLiveData = new MutableLiveData<ProductFormFilter>();
+
     private SelectionTracker selectionTracker = null;
     private ProductListBinding binding;
 
     private ViewGroup productView;
     private ViewGroup productEmptyView;
-    private ActionMode actionMode;
-    private MenuItem selectedItemCount, action_product_list_show, action_product_list_hide, action_product_list_share;
+    private MenuItem action_product_list_show_hide;
     private RecyclerView recyclerView;
-    private FloatingActionButton fab;
+    private FloatingActionButton fabAddProduct;
     private ProgressBar loading;
     private MenuItem action_item_search;
+    private ChipGroup chipGroup;
+    private FloatingActionButton fabShareProducts;
+    private ConstraintLayout toolbarSelectorPanel;
+    private TextView selectorPanelTitle;
 
 
     @Override
@@ -75,64 +87,70 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
         Toolbar toolbar = binding.toolbarProductList.productListToolbar;
         toolbar.inflateMenu(R.menu.product_list_menu);
         Menu menu = toolbar.getMenu();
-        selectedItemCount = menu.findItem(R.id.action_item_count);
-        selectedItemCount.setVisible(false);
-        action_product_list_show = menu.findItem(R.id.action_product_list_show);
-        action_product_list_show.setVisible(false);
-        action_product_list_hide = menu.findItem(R.id.action_product_list_hide);
-        action_product_list_hide.setVisible(false);
-        action_product_list_share = menu.findItem(R.id.action_product_list_share);
-        action_product_list_share.setVisible(false);
-        action_item_search = menu.findItem(R.id.action_item_search);
 
+        toolbarSelectorPanel = binding.toolbarProductList.selectorPanel;
+        ImageButton toolbarBackButton = binding.toolbarProductList.backButton;
+        toolbarBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (adapter.editMode.equals(ProductsRecyclerViewAdapter.EditMode.Selection)) {
+                    selectionTracker.clearSelection();
+                    return;
+                }
+                adapter.setEditMode(ProductsRecyclerViewAdapter.EditMode.NONE);
+                updateToolbarView();
+            }
+        });
+        selectorPanelTitle = binding.toolbarProductList.selectorPanelTitle;
+
+        action_item_search = menu.findItem(R.id.action_item_search);
         SearchView mSearchView = (SearchView) action_item_search.getActionView();
         mSearchView.setMaxWidth(Integer.MAX_VALUE);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                viewModel.searchProducts(s);
-
-                return false;
+                ProductFormFilter productFormFilter = productFormFilterLiveData.getValue();
+                productFormFilter.setName(s);
+                productFormFilterLiveData.postValue(productFormFilter);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
-
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId()==R.id.action_product_list_share) {
-                    if (selectionTracker.hasSelection()) {
-                        shareSelectedProducts(selectionTracker.getSelection());
-                    }
-                }
-                if (item.getItemId()==R.id.action_item_count) {
-                    selectionTracker.clearSelection();
-                }
-                if (item.getItemId()==R.id.action_product_list_show) {
-                    if (selectionTracker.hasSelection()) {
-                        showSelectedProducts(selectionTracker.getSelection());
-                    }
-                    selectionTracker.clearSelection();
-                }
-                if (item.getItemId()==R.id.action_product_list_hide) {
-                    if (selectionTracker.hasSelection()) {
-                        hideSelectedProducts(selectionTracker.getSelection());
-                    }
-                    selectionTracker.clearSelection();
+                if (s.isEmpty()) {
+                    ProductFormFilter productFormFilter = productFormFilterLiveData.getValue();
+                    productFormFilterLiveData.getValue().setName(null);
+                    productFormFilterLiveData.postValue(productFormFilter);
                 }
                 return true;
             }
         });
 
 
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId()==R.id.action_product_list_select) {
+                    adapter.setEditMode(ProductsRecyclerViewAdapter.EditMode.Selection);
+                    updateToolbarView();
+                }
+                if (item.getItemId()==R.id.action_product_list_in_store) {
+                    adapter.setEditMode(ProductsRecyclerViewAdapter.EditMode.inStore);
+                    updateToolbarView();
+                }
+                if (item.getItemId()==R.id.action_product_list_show_hide) {
+                    adapter.setEditMode(ProductsRecyclerViewAdapter.EditMode.inArchive);
+                    updateToolbarView();
+                }
+                return true;
+
+            }
+        });
+
+        //productView and productEmptyView
         productView = binding.products;
         productEmptyView = binding.productsEmptyView.getRoot();
         loading = binding.loading;
-
 
         //Getting reference of swipeRefreshLayout and recyclerView
         swipeRefreshLayout = binding.refreshProducts;
@@ -183,24 +201,9 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
             @Override
             public void onSelectionChanged() {
                 super.onSelectionChanged();
-                if (selectionTracker.hasSelection() && actionMode == null) {
+                adapter.setEditMode(selectionTracker.hasSelection() ? ProductsRecyclerViewAdapter.EditMode.Selection : ProductsRecyclerViewAdapter.EditMode.NONE);
+                updateToolbarView();
 
-//                    actionMode = startSupportActionMode(new ActionModeController(getApplicationContext(), selectionTracker));
-                    setMenuItemTitle(selectionTracker.getSelection().size());
-
-//                } else if (!selectionTracker.hasSelection() && actionMode != null) {
-//                    actionMode.finish();
-//                    actionMode = null;
-                } else {
-                    setMenuItemTitle(selectionTracker.getSelection().size());
-
-                }
-                adapter.setSelectionMode(selectionTracker.hasSelection());
-
-                Iterator<String> itemIterable = selectionTracker.getSelection().iterator();
-                while (itemIterable.hasNext()) {
-                    Log.i("TAG", itemIterable.next());
-                }
             }
 
             @Override
@@ -209,10 +212,64 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
             }
         });
 
-        // Create viewModel
+
+        //Groups
         viewModel = new ViewModelProvider(requireActivity(), new ProductViewModelFactory(getActivity().getApplication()))
                 .get(ProductViewModel.class);
         loading.setVisibility(View.VISIBLE);
+
+
+        //Filter
+        Chip chipAvailableFilter = binding.chipAvailableFilter;
+        chipAvailableFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                ProductFormFilter productFormFilter = productFormFilterLiveData.getValue();
+                if (b) {
+                    productFormFilter.setAvailable(true);
+                } else {
+                    productFormFilter.setAvailable(null);
+                }
+
+                productFormFilterLiveData.postValue(productFormFilter);
+
+            }
+        });
+
+
+        //Groups
+        chipGroup = binding.chipGroup;
+
+        viewModel.getCategoryListLiveData().observe(getViewLifecycleOwner(), new Observer<Result<List<Category>>>() {
+            @Override
+            public void onChanged(Result<List<Category>> result) {
+                if (result == null) {
+                    return;
+                }
+                loading.setVisibility(View.GONE);
+                if (result instanceof Result.Error) {
+                    failResult((Result.Error) result);
+                }
+                if (result instanceof Result.Success) {
+                    fillChipGroup(((Result.Success<List<Category>>) result).getData());
+                }
+            }
+        });
+
+
+        //Products List
+        productFormFilterLiveData.postValue(new ProductFormFilter());
+        productFormFilterLiveData.observe(getViewLifecycleOwner(), new Observer<ProductFormFilter>() {
+            @Override
+            public void onChanged(ProductFormFilter productFormFilter) {
+                viewModel.searchProducts(productFormFilter.getName(),
+                        productFormFilter.getCategory()!=null ? productFormFilter.getCategory().getId().toString(): null,
+                        productFormFilter.getAvailable(),
+                        null);
+            }
+        });
+
+
         viewModel.getProductListLiveData().observe(getViewLifecycleOwner(), new Observer<Result<List<Product>>>() {
             @Override
             public void onChanged(Result<List<Product>> result) {
@@ -229,6 +286,7 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
             }
         });
 
+        //Products New
         viewModel.getNewProductLiveData().observe(getViewLifecycleOwner(), new Observer<Result<Product>>() {
             @Override
             public void onChanged(Result<Product> result) {
@@ -241,6 +299,7 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
             }
         });
 
+        //Products Edit
         viewModel.getEditedProductLiveData().observe(getViewLifecycleOwner(), new Observer<Result<Product>>() {
             @Override
             public void onChanged(Result<Product> result) {
@@ -284,14 +343,26 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
             }
         });
 
-        fab = binding.floatingActionButton;
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        fabAddProduct = binding.fabAddProducts;
+        fabAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addProduct();
             }
         });
 
+        fabShareProducts = binding.fabShareProducts;
+        fabShareProducts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (selectionTracker.hasSelection()) {
+                    shareSelectedProducts(selectionTracker.getSelection());
+                }
+            }
+        });
+
+        
         Button button = binding.productsEmptyView.button;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,21 +375,32 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
     }
 
 
-    private void hideSelectedProducts(Selection selection) {
-        Iterator<String> itemIterable = selection.iterator();
-        while (itemIterable.hasNext()) {
-            Product product = adapter.getProduct(itemIterable.next());
-            product.setActive(false);
-            viewModel.editProduct(product);
-        }
-    }
+    private void fillChipGroup(List<Category> categoryList) {
 
-    private void showSelectedProducts(Selection selection) {
-        Iterator<String> itemIterable = selection.iterator();
-        while (itemIterable.hasNext()) {
-            Product product = adapter.getProduct(itemIterable.next());
-            product.setActive(true);
-            viewModel.editProduct(product);
+        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ChipGroup group, int checkedId) {
+
+                ProductFormFilter productFormFilter = productFormFilterLiveData.getValue();
+                if (checkedId != -1) {
+                    Category category = categoryList.get(checkedId);
+                    productFormFilter.setCategory(category);
+                } else {
+                    productFormFilter.setCategory(null);
+                }
+
+                productFormFilterLiveData.postValue(productFormFilter);
+            }
+        });
+
+        chipGroup.removeAllViews();
+        for (int i = 0; i < categoryList.size(); i++) {
+            Category item = categoryList.get(i);
+            Chip chip = new Chip(getContext());
+            chip.setId(i);
+            chip.setText(item.getName());
+            chip.setCheckable(true);
+            chipGroup.addView(chip);
         }
     }
 
@@ -385,7 +467,8 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
         Picasso.get().load(product.getImage()).into(new Target() {
             @Override public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 Intent i = new Intent(Intent.ACTION_SEND);
-                String text = product.getName() + "\n" +
+                String text = (product.isInStore() ? "В Наличии: ": "Под заказ: ") +
+                        product.getName() + "\n" +
                         getResources().getString(R.string.share_message_price) +" "+ product.getPrice() + " " + product.getPrice_currency()+ " " + product.getUnitPrice() + "\n" +
                         product.getDescription() + "\n" +
                         getResources().getString(R.string.share_message_product_link) +" "+ product.getProductUrl()
@@ -428,13 +511,41 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
         return bmpUri;
     }
 
-    public void setMenuItemTitle(int selectedItemSize) {
-        action_product_list_show.setVisible(selectedItemSize > 0);
-        action_product_list_hide.setVisible(selectedItemSize > 0);
-        action_product_list_share.setVisible(selectedItemSize > 0);
-        selectedItemCount.setVisible(selectedItemSize > 0);
-        action_item_search.setVisible(!(selectedItemSize > 0));
-        selectedItemCount.setTitle("Clean " + selectedItemSize);
+    public void updateToolbarView() {
+
+        switch (adapter.editMode){
+            case Selection:
+                toolbarSelectorPanel.setVisibility(View.VISIBLE);
+                selectorPanelTitle.setText("");
+
+                fabAddProduct.setVisibility(View.GONE);
+                fabShareProducts.setVisibility(View.VISIBLE);
+                break;
+            case inStore:
+                toolbarSelectorPanel.setVisibility(View.VISIBLE);
+                selectorPanelTitle.setText(R.string.product_list_action_instore_title);
+
+                fabAddProduct.setVisibility(View.GONE);
+                fabShareProducts.setVisibility(View.GONE);
+                break;
+            case inArchive:
+                toolbarSelectorPanel.setVisibility(View.VISIBLE);
+                selectorPanelTitle.setText(R.string.product_list_action_show_title);
+
+                fabAddProduct.setVisibility(View.GONE);
+                fabShareProducts.setVisibility(View.GONE);
+                break;
+            case NONE:
+                toolbarSelectorPanel.setVisibility(View.GONE);
+                fabAddProduct.setVisibility(View.VISIBLE);
+                fabShareProducts.setVisibility(View.GONE);
+                break;
+
+        }
+
+
+
+//        action_item_search.setVisible(!(selectedItemSize > 0));
     }
 
     private void addProduct() {
@@ -444,10 +555,26 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
 
     }
 
+
     @Override
     public void onProductClick(View view, int position) {
         Product product = adapter.getItem(position);
         viewModel.setEditProduct(product);
+
+        switch (adapter.editMode) {
+            case inStore:
+                product.setInStore(!product.isInStore());
+                viewModel.updateProduct(product);
+                return;
+            case inArchive:
+                product.setActive(!product.isActive());
+                viewModel.updateProduct(product);
+                return;
+            case Selection:
+                selectionTracker.select(product.getId().toString());
+                return;
+        }
+
         Toast.makeText(getActivity(), getString(R.string.toast_edit_product), Toast.LENGTH_SHORT).show();
         showProductDetailsFragment();
 
@@ -471,6 +598,4 @@ public class ProductListFragment extends DataFragment implements ProductsRecycle
                     .addToBackStack(null)
                     .commit();
     }
-
-
 }

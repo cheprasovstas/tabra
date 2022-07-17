@@ -25,7 +25,6 @@
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -42,6 +41,7 @@
                 android:name=".ui.login.LoginActivity"
                 android:exported="true"
                 android:label="@string/activity_login_title"/> <!-- make sure within the application tag, otherwise app will crash with XmlResourceParser errors -->
+
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="${applicationId}.provider"

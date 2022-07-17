@@ -8,18 +8,13 @@
         android:title="Search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/action_product_list_select"
+        android:title="@string/product_list_action_select_title" />
+    <item android:id="@+id/action_product_list_in_store"
+        android:title="@string/product_list_action_instore_title" />
     <item
-            android:id="@+id/action_item_count"
-            app:showAsAction="always" android:title="TODO"/>
-    <item android:title="@string/product_list_action_hide_title"
-          android:id="@+id/action_product_list_hide"
-          app:showAsAction="always" android:icon="@drawable/hide"/>
-    <item android:title="@string/product_list_action_show_title"
-          android:id="@+id/action_product_list_show"
-          app:showAsAction="always" android:icon="@drawable/show"/>
-    <item android:title="@string/product_list_action_share_title"
-          android:id="@+id/action_product_list_share"
-          android:icon="@android:drawable/ic_menu_share"
-          app:showAsAction="always"/>
+        android:id="@+id/action_product_list_show_hide"
+        android:icon="@drawable/show"
+        android:title="@string/product_list_action_show_title" />
 </menu>
 

@@ -38,14 +38,32 @@
                    android:layout_toEndOf="@id/productImage"
                    android:layout_below="@id/productName"
                    android:layout_marginTop="8dp"/>
+
            <ImageView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:id="@+id/activeImageView"
-                   android:layout_marginRight="16dp" android:layout_centerInParent="false" android:visibility="visible"
-                   app:srcCompat="@android:drawable/presence_offline"
-                   android:layout_alignParentEnd="false"
-                   android:layout_alignEnd="@id/productImage" android:layout_alignBottom="@id/productImage"/>
+               android:id="@+id/activeImageView"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignEnd="@id/productImage"
+               android:layout_alignBottom="@id/productImage"
+               android:layout_alignParentEnd="false"
+               android:layout_centerInParent="false"
+               android:layout_marginRight="16dp"
+               android:visibility="visible"
+               app:srcCompat="@android:drawable/presence_offline" />
+
+           <ImageView
+               android:id="@+id/instoreImageView"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignEnd="@id/productImage"
+               android:layout_alignBottom="@id/productImage"
+               android:layout_alignParentEnd="false"
+               android:layout_centerInParent="false"
+               android:layout_marginRight="16dp"
+               android:visibility="visible"
+               app:srcCompat="@android:drawable/presence_online" />
+
+           <!--presence_offline-->
            <ImageView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"

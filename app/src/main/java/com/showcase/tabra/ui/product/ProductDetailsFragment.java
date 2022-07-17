@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -14,6 +13,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,12 +30,10 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.showcase.tabra.BuildConfig;
 import com.showcase.tabra.R;
 import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.remote.Result;
@@ -59,13 +57,14 @@ public class ProductDetailsFragment extends DataFragment {
     private ImageView imageView;
     private TextInputLayout categoryTxt, nameTxt, priceTxt, descriptionTxt;
     private TextInputLayout unitPrice;
-    private Switch toolbarSwitch;
 
     private ProductDetailsBinding binding;
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 101;
     private FloatingActionButton fab;
     private ArrayAdapter<Category> adapter;
+    private List<Category> originCategoryList;
+
 
 
     @Override
@@ -79,8 +78,6 @@ public class ProductDetailsFragment extends DataFragment {
         Toolbar toolbar = binding.toolbarProductDetails.productDetailsToolbar;
         toolbar.inflateMenu(R.menu.product_details_menu);
         Menu menu = toolbar.getMenu();
-        MenuItem product_active_switch = menu.findItem(R.id.product_active_switch);
-        toolbarSwitch = (Switch)product_active_switch.getActionView().findViewById(R.id.show_hide_action);
 
 
         ImageButton cancelButton = binding.toolbarProductDetails.toolbarCancelButton;
@@ -104,16 +101,6 @@ public class ProductDetailsFragment extends DataFragment {
                     Product product = viewModel.getEditProduct().getValue();
                     deleteProduct(product);
                 }
-                if (id == R.id.action_product_details_share) {
-                    Product product = viewModel.getEditProduct().getValue();
-
-                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                    sendIntent.setType("text/plain");
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, BuildConfig.API_URL+"products/"+product.getId().toString());
-                    //startActivity(sendIntent);
-                    startActivity(Intent.createChooser(sendIntent, "Title"));
-                }
-
                 return false;
             }
         });
@@ -136,6 +123,7 @@ public class ProductDetailsFragment extends DataFragment {
 
         //View for categories
         viewModel.getCategoryListLiveData().observe(getViewLifecycleOwner(), new Observer<Result<List<Category>>>() {
+
             @Override
             public void onChanged(Result<List<Category>> result) {
                 if (result == null) {
@@ -145,9 +133,9 @@ public class ProductDetailsFragment extends DataFragment {
                     failResult((Result.Error) result);
                 }
                 if (result instanceof Result.Success) {
+                    originCategoryList = ((Result.Success<List<Category>>) result).getData();
                     adapter.clear();
-                    adapter.addAll(((Result.Success<List<Category>>) result).getData());
-
+                    adapter.addAll(originCategoryList);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -157,6 +145,7 @@ public class ProductDetailsFragment extends DataFragment {
         AppCompatAutoCompleteTextView autoCompleteTextView = binding.autoCompleteTextView;
         autoCompleteTextView.setThreshold(1);//will start working from first character
         autoCompleteTextView.setAdapter(adapter);
+
         autoCompleteTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -186,7 +175,17 @@ public class ProductDetailsFragment extends DataFragment {
                     categoryTxt.setHelperText(null);
                     return;
                 }
+
                 categoryTxt.setHelperText("Новая категория");
+            }
+        });
+
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getActivity(),
+                        adapter.getItem(i).toString(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -237,10 +236,12 @@ public class ProductDetailsFragment extends DataFragment {
         return root;
     }
 
+
     private Category getCategoryByName(String s) {
-        for (int i = 0; i < adapter.getCount(); i++) {
-            if (adapter.getItem(i).getName().equals(s)) {
-                return adapter.getItem(i);
+
+        for (Category category: originCategoryList) {
+            if (category.getName().equals(s.trim())) {
+                return category;
             }
         }
         return null;
@@ -269,7 +270,6 @@ public class ProductDetailsFragment extends DataFragment {
                 .placeholder(R.drawable.product_list_placeholder)
                 //               .error(R.drawable.user_placeholder_error)
                 .into(imageView);
-        toolbarSwitch.setChecked(product.isActive());
     }
 
 
@@ -281,6 +281,8 @@ public class ProductDetailsFragment extends DataFragment {
             Category category = getCategoryByName(categoryTxt.getEditText().getText().toString());
             if (category!=null) {
                 product.setCategory_id(category.getId());
+                product.setCategoryName("");
+
             } else {
                 product.setCategory_id(null);
                 product.setCategoryName(categoryTxt.getEditText().getText().toString());
@@ -298,7 +300,6 @@ public class ProductDetailsFragment extends DataFragment {
         if (unitPrice.getEditText() != null) {
             product.setUnitPrice(unitPrice.getEditText().getText().toString());
         }
-        product.setActive(toolbarSwitch.isChecked());
         if (descriptionTxt.getEditText() != null) {
             product.setDescription(descriptionTxt.getEditText().getText().toString());
         }
@@ -307,7 +308,7 @@ public class ProductDetailsFragment extends DataFragment {
         }
         Bundle result = new Bundle();
         if (product.getId()!=null) {
-            viewModel.editProduct(product);
+            viewModel.updateProduct(product);
             getParentFragmentManager().setFragmentResult("edit_product", result);
         } else {
             viewModel.addProduct(product);
