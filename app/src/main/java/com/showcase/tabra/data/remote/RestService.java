@@ -4,6 +4,8 @@ package com.showcase.tabra.data.remote;
 import com.showcase.tabra.data.model.Category;
 import com.showcase.tabra.data.model.LoginRequest;
 import com.showcase.tabra.data.model.LoginResponse;
+import com.showcase.tabra.data.model.Order;
+import com.showcase.tabra.data.model.OrderItem;
 import com.showcase.tabra.data.model.Showcase;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -13,6 +15,7 @@ import com.showcase.tabra.data.model.Product;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public interface RestService {
@@ -73,6 +76,16 @@ public interface RestService {
 
     @GET("categories/")
     Call<List<Category>> getCategories();
+
+    @GET("orders/")
+    Call<List<Order>> getOrders();
+
+    @GET("orders/{order_id}/")
+    Call<Order> getOrder(@Path("order_id") String order_id);
+
+    @PUT("orders/{order_id}/items/{id}/")
+    Call<OrderItem> updateOrderItem(@Path("order_id") String order_id, @Path("id") BigInteger id, @Body OrderItem item);
+
 }
 
 

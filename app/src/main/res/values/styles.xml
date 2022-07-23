@@ -12,10 +12,6 @@
     </style>
 
 
-
-
-
-
     <!-- FAB-->
     <style name="Widget.App.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="materialThemeOverlay">@style/myCustomThemeForFab</item>
@@ -100,5 +96,12 @@
         <item name="searchHintIcon">@null</item>
     </style>
 
+
+
+    <style name="DialogStyle" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <!--item name="android:statusBarColor">@android:color/transparent</item-->
+        <item name="android:windowSoftInputMode">adjustResize|stateVisible</item>
+    </style>
 
 </resources>

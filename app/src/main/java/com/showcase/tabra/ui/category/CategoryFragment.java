@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.showcase.tabra.R;
-import com.showcase.tabra.data.PlaceholderContent;
+import com.showcase.tabra.data.CategoryRepository;
 
 /**
  * A fragment representing a list of Items.
@@ -65,7 +65,7 @@ public class CategoryFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new CategoryRecyclerViewAdapter(PlaceholderContent.ITEMS));
+            recyclerView.setAdapter(new CategoryRecyclerViewAdapter(CategoryRepository.ITEMS));
         }
         return view;
     }

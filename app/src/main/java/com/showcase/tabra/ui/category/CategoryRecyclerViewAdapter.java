@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.showcase.tabra.data.PlaceholderContent.PlaceholderItem;
+import com.showcase.tabra.data.CategoryRepository.PlaceholderItem;
 import com.showcase.tabra.databinding.CategoryFragmentItemBinding;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class CategoryRecyclerViewAdapter extends RecyclerView.Adapter<CategoryRe
 
         public ViewHolder(CategoryFragmentItemBinding binding) {
             super(binding.getRoot());
-            mIdView = binding.itemNumber;
+            mIdView = binding.orderName;
             mContentView = binding.content;
         }
 

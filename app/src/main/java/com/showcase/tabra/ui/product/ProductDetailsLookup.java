@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.selection.ItemDetailsLookup;
 import androidx.recyclerview.widget.RecyclerView;
-import com.showcase.tabra.data.model.Product;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ProductDetailsLookup extends ItemDetailsLookup {
@@ -25,8 +25,8 @@ public class ProductDetailsLookup extends ItemDetailsLookup {
         View view = recyclerView.findChildViewUnder(motionEvent.getX(), motionEvent.getY());
         if (view != null) {
             RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
-            if (viewHolder instanceof ProductsRecyclerViewAdapter.ProductListHolder) {
-                return ((ProductsRecyclerViewAdapter.ProductListHolder) viewHolder).getItemDetails();
+            if (viewHolder instanceof ProductsRecyclerViewAdapter.ViewHolder) {
+                return ((ProductsRecyclerViewAdapter.ViewHolder) viewHolder).getItemDetails();
             }
         }
         return null;

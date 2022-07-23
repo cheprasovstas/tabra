@@ -5,32 +5,39 @@ plugins {
 android {
     compileSdk 31
 
-    defaultConfig {
-        applicationId "com.tabra"
-        minSdk 21
-        targetSdk 31
-        versionCode 1
-        versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.debug
+    def versionPropsFile = file('version.properties')
+
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        def code = versionProps['VERSION_CODE'].toInteger() + 1
+
+        versionProps['VERSION_CODE']=code.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+
+        defaultConfig {
+            applicationId "com.tabra"
+            minSdk 21
+            targetSdk 31
+            versionCode 1
+            versionName "1.0"
+
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            signingConfig signingConfigs.debug
+        }
+    }
+    else {
+        throw new GradleException("Could not read version.properties!")
     }
 
-//    buildTypes {
-//        debug {
-//            buildConfigField "String", "API_URL", '"http://10.0.2.2:8000/"'
-//        }
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            buildConfigField "String", "API_URL", '"http://10.0.2.2:8000/"'
-//        }
-//    }
 
     buildTypes {
         debug {
-//            buildConfigField "String", "API_URL", '"http://10.0.2.2:8000/"'
-            buildConfigField "String", "API_URL", '"http://tabrara.ru/"'
+            buildConfigField "String", "API_URL", '"http://10.0.2.2:8000/"'
+//            buildConfigField "String", "API_URL", '"http://tabrara.ru/"'
         }
         release {
             buildConfigField "String", "API_URL", '"http://tabrara.ru/"'

@@ -32,6 +32,8 @@
         <!--SearchView-->
         <item name="searchViewStyle">@style/Widget.App.SearchView</item>
 
+        <!--BottomSheetDialogTheme-->
+        <item name="bottomSheetDialogTheme">@style/DialogStyle</item>
     </style>
 
 

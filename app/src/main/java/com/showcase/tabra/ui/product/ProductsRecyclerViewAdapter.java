@@ -19,7 +19,7 @@ import java.util.List;
 
 
 
-public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ProductListHolder> {
+public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ViewHolder> {
     enum EditMode {
         inStore,
         inArchive,
@@ -41,7 +41,7 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
         return position;
     }
 
-    private List<Product> productList;
+    private List<Product> productList = new ArrayList<Product>();
     private LayoutInflater mInflater;
     private onProductClickListener mProductClickListener;
     private SelectionTracker<String> tracker = null;
@@ -51,23 +51,21 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
     // data is passed into the constructor
     ProductsRecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        this.productList = new ArrayList<Product>();
 
         setHasStableIds(true);
-
     }
 
     // inflates the row layout from xml when needed
     @Override
-    public ProductListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.product_list_row, parent, false);
-        return (new ProductListHolder(itemView));
+        return (new ViewHolder(itemView));
     }
 
     
     // binds the data to the TextView in each row
     @Override
-    public void onBindViewHolder(ProductListHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Product product = productList.get(position);
         holder.bind(product);
     }
@@ -112,12 +110,12 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ProductListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView productNameTextView;
         TextView productPriceTextView;
         ImageView productImageView, selectedImageView, activeImageView, instoreImageView;
 
-        ProductListHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             productNameTextView = itemView.findViewById(R.id.productName);
             productPriceTextView = itemView.findViewById(R.id.productPrice);
@@ -131,8 +129,6 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
         public void onClick(View view) {
             if (mProductClickListener != null) {
                 mProductClickListener.onProductClick(view, getBindingAdapterPosition());
-//                selectedImageView.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
-
             }
         }
 

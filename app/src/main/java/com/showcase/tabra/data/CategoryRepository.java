@@ -1,4 +1,4 @@
-package com.showcase.tabra.data.model;
+package com.showcase.tabra.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class PlaceholderContent {
+public class CategoryRepository {
 
     /**
      * An array of sample (placeholder) items.
@@ -23,7 +23,7 @@ public class PlaceholderContent {
      */
     public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
 
-    private static final int COUNT = 1;
+    private static final int COUNT = 25;
 
     static {
         // Add some sample items.
@@ -38,9 +38,17 @@ public class PlaceholderContent {
     }
 
     private static PlaceholderItem createPlaceholderItem(int position) {
-        return new PlaceholderItem(String.valueOf(position), "Здесь скоро будут ваши заказы ");
+        return new PlaceholderItem(String.valueOf(position), "Item " + position, makeDetails(position));
     }
 
+    private static String makeDetails(int position) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Details about Item: ").append(position);
+        for (int i = 0; i < position; i++) {
+            builder.append("\nMore details information here.");
+        }
+        return builder.toString();
+    }
 
     /**
      * A placeholder item representing a piece of content.
@@ -48,10 +56,12 @@ public class PlaceholderContent {
     public static class PlaceholderItem {
         public final String id;
         public final String content;
+        public final String details;
 
-        public PlaceholderItem(String id, String content) {
+        public PlaceholderItem(String id, String content, String details) {
             this.id = id;
             this.content = content;
+            this.details = details;
         }
 
         @Override
